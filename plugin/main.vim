@@ -162,12 +162,12 @@ function! PathfinderRun()
       let child_node.f = child_node.g + (h * g:pf_heuristic_strength)
 
       if has_key(open_nodes, child_node.key)
-	" Replace the existing node if this one has a lower g
-	if child_node.g < open_nodes[child_node.key].g
-	  let open_nodes[child_node.key] = child_node
-	endif
+	      " Replace the existing node if this one has a lower g
+      	if child_node.g < open_nodes[child_node.key].g
+	        let open_nodes[child_node.key] = child_node
+      	endif
       else
-	let open_nodes[child_node.key] = child_node
+      	let open_nodes[child_node.key] = child_node
       endif
     endfor
   endwhile
