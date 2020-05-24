@@ -1,7 +1,7 @@
 # pathfinder.vim
 
 An experimental Vim plugin based on [this Reddit post][reddit]. Taking a start
-position and and end position, it attempts to calculate the best combination of
+position and an end position, it attempts to calculate the best combination of
 motions in order to move between them.
 
 ## Installation
