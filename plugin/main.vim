@@ -25,6 +25,9 @@ if !exists('g:pf_motions')
     \ {'motion': 'b', 'weight': 1},
     \ ]
 endif
+if !exists('g:pf_heuristic_strength')
+  let g:pf_heuristic_strength = 0.1
+endif
 
 
 function! PathfinderBegin()
@@ -128,7 +131,7 @@ function! PathfinderRun()
 
       let child_node.g = current_node.g + child_node.reached_weight
       let h = abs(g:pf_end_line - child_node.line) + abs(g:pf_end_col - child_node.col)
-      let child_node.f = child_node.g + h
+      let child_node.f = child_node.g + (h * g:pf_heuristic_strength)
 
       if has_key(open_nodes, child_node.key)
 	" Replace the existing node if this one has a lower g
