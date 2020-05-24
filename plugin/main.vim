@@ -1,26 +1,28 @@
 if !exists('g:pf_motions')
   let g:pf_motions = [
-    \ {'motion': 'h', 'weight': 1},
     \ {'motion': 'j', 'weight': 1},
     \ {'motion': 'k', 'weight': 1},
-    \ {'motion': 'l', 'weight': 1},
-    \ {'motion': 'w', 'weight': 1},
-    \ {'motion': 'e', 'weight': 1},
-    \ {'motion': 'b', 'weight': 1},
-    \ {'motion': 'ge', 'weight': 1},
-    \ {'motion': '0', 'weight': 1},
-    \ {'motion': '^', 'weight': 1},
-    \ {'motion': '$', 'weight': 1},
-    \ {'motion': 'g_', 'weight': 1},
     \ {'motion': '(', 'weight': 1},
     \ {'motion': ')', 'weight': 1},
     \ {'motion': '{', 'weight': 1},
     \ {'motion': '}', 'weight': 1},
-    \ {'motion': '%', 'weight': 1},
     \ {'motion': '#', 'weight': 1},
     \ {'motion': '*', 'weight': 1},
     \ {'motion': ']m', 'weight': 1},
     \ {'motion': '[m', 'weight': 1}
+    \ ]
+  let g:pf_motions_target_line_only = [
+    \ {'motion': '0', 'weight': 1},
+    \ {'motion': '^', 'weight': 1},
+    \ {'motion': '$', 'weight': 1},
+    \ {'motion': 'g_', 'weight': 1},
+    \ {'motion': '%', 'weight': 1},
+    \ {'motion': 'ge', 'weight': 1},
+    \ {'motion': 'h', 'weight': 1},
+    \ {'motion': 'l', 'weight': 1},
+    \ {'motion': 'w', 'weight': 1},
+    \ {'motion': 'e', 'weight': 1},
+    \ {'motion': 'b', 'weight': 1},
     \ ]
 endif
 
@@ -53,19 +55,32 @@ function! CreateNode(l, c, rb, rw, rf)
     \ 'reached_by': a:rb, 'reached_weight': a:rw, 'reached_from': a:rf}
 endfunction
 
+function! DoMotion(node, child_nodes, motion)
+  " Move to this node's character, then run the movement
+  execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . a:motion['motion']
+
+  if line('.') != a:node['line'] || col('.') != a:node['col']
+    " Only add the child node if the motion had an effect
+    " This means we don't add things such as l at the end of a line
+    call add(a:child_nodes, CreateNode(
+      \ line('.'), col('.'), a:motion['motion'], a:motion['weight'], a:node))
+  endif
+endfunction
+
 function! GetChildNodes(node)
   let child_nodes = []
-  for motion in g:pf_motions
-    " Move to this node's character, then run the movement
-    execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . motion['motion']
 
-    if line('.') != a:node['line'] || col('.') != a:node['col']
-      " Only add the child node if the motion had an effect
-      " This means we don't add things such as l at the end of a line
-      call add(child_nodes, CreateNode(
-        \ line('.'), col('.'), motion['motion'], motion['weight'], a:node))
-    endif
+  for motion in g:pf_motions
+    call DoMotion(a:node, child_nodes, motion)
   endfor
+
+  " If we are on the same line as the target position, use these too
+  if line('.') == g:pf_end_line
+    for motion in g:pf_motions_target_line_only
+      call DoMotion(a:node, child_nodes, motion)
+    endfor
+  endif
+
   return child_nodes
 endfunction
 
