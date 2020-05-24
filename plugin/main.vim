@@ -60,7 +60,12 @@ endfunction
 
 function! DoMotion(node, child_nodes, motion)
   " Move to this node's character, then run the movement
-  execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . a:motion['motion']
+  try
+    execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . a:motion['motion']
+  catch
+    " Ignore motions which cause an error
+    return
+  endtry
 
   if line('.') != a:node['line'] || col('.') != a:node['col']
     " Only add the child node if the motion had an effect
