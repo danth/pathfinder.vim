@@ -107,7 +107,24 @@ function! Backtrack(final_node)
   endwhile
 
   call reverse(motion_sequence)
-  echom motion_sequence
+
+  " Combine repeated motions into one with a count
+  " Basically run length encoding
+  let motion_string = ''
+  let last_motion = ''
+  let c = 0
+  for motion in motion_sequence
+    if last_motion !=# motion
+      let motion_string = motion_string . (c > 1 ? c : '') . last_motion
+      let last_motion = motion
+      let c = 1
+    else
+      let c = c + 1
+    endif
+  endfor
+  let motion_string = motion_string . (c > 1 ? c : '') . last_motion
+
+  echom motion_string
 endfunction
 
 function! PathfinderRun()
