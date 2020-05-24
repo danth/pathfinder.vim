@@ -1,3 +1,30 @@
+if !exists('g:pf_motions')
+  let g:pf_motions = [
+    \ {'motion': 'h', 'weight': 1},
+    \ {'motion': 'j', 'weight': 1},
+    \ {'motion': 'k', 'weight': 1},
+    \ {'motion': 'l', 'weight': 1},
+    \ {'motion': 'w', 'weight': 1},
+    \ {'motion': 'e', 'weight': 1},
+    \ {'motion': 'b', 'weight': 1},
+    \ {'motion': 'ge', 'weight': 1},
+    \ {'motion': '0', 'weight': 1},
+    \ {'motion': '^', 'weight': 1},
+    \ {'motion': '$', 'weight': 1},
+    \ {'motion': 'g_', 'weight': 1},
+    \ {'motion': '(', 'weight': 1},
+    \ {'motion': ')', 'weight': 1},
+    \ {'motion': '{', 'weight': 1},
+    \ {'motion': '}', 'weight': 1},
+    \ {'motion': '%', 'weight': 1},
+    \ {'motion': '#', 'weight': 1},
+    \ {'motion': '*', 'weight': 1},
+    \ {'motion': ']m', 'weight': 1},
+    \ {'motion': '[m', 'weight': 1}
+    \ ]
+endif
+
+
 function! PathfinderBegin()
   " Record the current cursor position
   let g:pf_start_line = line('.')
@@ -26,23 +53,19 @@ function! CreateNode(l, c, rb, rw, rf)
     \ 'reached_by': a:rb, 'reached_weight': a:rw, 'reached_from': a:rf}
 endfunction
 
-function! CreateChildNodeForMovement(child_nodes, node, movement, weight)
-  " Move to this node's character, then run the movement
-  execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . a:movement
-
-  if line('.') != a:node['line'] || col('.') != a:node['col']
-    " Only add the child node if the movement had an effect
-    " This means we don't add things like l on the end of a line
-    call add(a:child_nodes, CreateNode(line('.'), col('.'), a:movement, a:weight, a:node))
-  endif
-endfunction
-
 function! GetChildNodes(node)
   let child_nodes = []
-  call CreateChildNodeForMovement(child_nodes, a:node, 'h', 1)
-  call CreateChildNodeForMovement(child_nodes, a:node, 'j', 1)
-  call CreateChildNodeForMovement(child_nodes, a:node, 'k', 1)
-  call CreateChildNodeForMovement(child_nodes, a:node, 'l', 1)
+  for motion in g:pf_motions
+    " Move to this node's character, then run the movement
+    execute 'normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . motion['motion']
+
+    if line('.') != a:node['line'] || col('.') != a:node['col']
+      " Only add the child node if the motion had an effect
+      " This means we don't add things such as l at the end of a line
+      call add(child_nodes, CreateNode(
+        \ line('.'), col('.'), motion['motion'], motion['weight'], a:node))
+    endif
+  endfor
   return child_nodes
 endfunction
 
