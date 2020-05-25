@@ -86,7 +86,7 @@ function! GetChildNodes(node)
   endfor
 
   " If we are on the same line as the target position, use these too
-  if line('.') == g:pf_end_line
+  if a:node['line'] == g:pf_end_line
     for motion in g:pf_motions_target_line_only
       call DoMotion(a:node, child_nodes, motion)
     endfor
