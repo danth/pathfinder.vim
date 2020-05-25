@@ -60,27 +60,6 @@ function! CalcG(node)
   return g
 endfunction
 
-function CalcF(node)
-  return CalcG(a:node)
-    \ + abs(g:pf_end_line - a:node.line)
-    \ + abs(g:pf_end_col - a:node.col)
-endfunction
-
-function! MinF(open_nodes)
-  let min_node = values(a:open_nodes)[0]
-  let min_node_f = CalcF(min_node)
-
-  for [key, node] in items(a:open_nodes)[1:]
-    let node_f = CalcF(node)
-    if node_f < min_node_f
-      let min_node = node
-      let min_node_f = node_f
-    endif
-  endfor
-
-  return min_node
-endfunction
-
 function! CoordString(l, c)
   return a:l . ',' . a:c
 endfunction
@@ -165,18 +144,19 @@ function! PathfinderRun()
   let g:pf_end_line = line('.')
   let g:pf_end_col = virtcol('.')
 
-  let open_nodes = {}
-  let closed_nodes = {}
+  let nodes = {}
+  let open_nodes = []
   let motion_sequence = []
 
   let start_node = {'key': CoordString(g:pf_start_line, g:pf_start_col),
                    \ 'line': g:pf_start_line, 'col': g:pf_start_col}
-  let open_nodes[start_node.key] = start_node
+  call add(open_nodes, start_node)
 
   while len(open_nodes) > 0
-    let current_node = MinF(open_nodes)
-    unlet open_nodes[current_node['key']]
-    let closed_nodes[current_node['key']] = current_node
+    " Pop a node from the start of open_nodes
+    let current_node = open_nodes[0]
+    let open_nodes = open_nodes[1:]
+    let current_node['closed'] = 1
 
     if current_node.line == g:pf_end_line && current_node.col == g:pf_end_col
       " Found the target
@@ -185,15 +165,16 @@ function! PathfinderRun()
     endif
 
     for child_node in GetChildNodes(current_node)
-      if has_key(closed_nodes, child_node.key) | continue | endif
+      if has_key(child_node, 'closed') | continue | endif
 
-      if has_key(open_nodes, child_node.key)
+      if has_key(nodes, child_node.key)
 	      " Replace the existing node if this one has a lower g
-      	if CalcG(child_node) < CalcG(open_nodes[child_node.key])
-	        call extend(open_nodes[child_node.key], child_node)
+      	if CalcG(child_node) < CalcG(nodes[child_node.key])
+	        call extend(nodes[child_node.key], child_node)
       	endif
       else
-      	let open_nodes[child_node.key] = child_node
+        let nodes[child_node.key] = child_node
+      	call add(open_nodes, child_node)
       endif
     endfor
   endwhile
