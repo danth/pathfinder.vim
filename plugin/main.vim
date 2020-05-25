@@ -75,13 +75,13 @@ endfunction
 function! DoMotion(node, child_nodes, motion)
   call cursor(a:node.line, a:node.col)
   try
-    execute 'silent! normal! ' . a:motion['motion']
+    execute 'silent! normal! ' . a:motion.motion
   catch
     " Ignore motions which cause an error
     return
   endtry
 
-  if line('.') != a:node['line'] || virtcol('.') != a:node['col']
+  if line('.') != a:node.line || virtcol('.') != a:node.col
     " Only add the child node if the motion had an effect
     " This means we don't add things such as l at the end of a line
     call add(a:child_nodes, CreateNode(line('.'), virtcol('.'), a:motion, a:node))
@@ -96,7 +96,7 @@ function! GetChildNodes(node)
   endfor
 
   " If we are on the same line as the target position, use these too
-  if a:node['line'] == w:pf_end_line
+  if a:node.line == w:pf_end_line
     for motion in g:pf_motions_target_line_only
       call DoMotion(a:node, child_nodes, motion)
     endfor
