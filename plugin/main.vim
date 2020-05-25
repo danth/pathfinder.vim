@@ -44,17 +44,20 @@ command PathfinderBegin call PathfinderBegin()
 function! CalcG(node)
   " The G value can change based on the previously typed motions, so it must be
   " recalculated each time
-  if has_key(a:node, 'reached_from')
-    return CalcG(a:node.reached_from) +
-      \ (has_key(a:node.reached_from, 'reached_by')
-      \  && a:node.reached_from.reached_by == a:node.reached_by)
-      \ ? a:node.reached_by.rweight : a:node.reached_by.weight
-  elseif has_key(a:node, 'reached_by')
-    return a:node.reached_by.weight
-  else
-    " This is the start node
-    return 0
-  endif
+  let node = a:node
+  let g = 0
+
+  while has_key(node, 'reached_from')
+    if has_key(node.reached_from, 'reached_by')
+      \ && node.reached_from.reached_by == node.reached_by
+      let g += node.reached_by.rweight
+    else
+      let g += node.reached_by.weight
+    endif
+    let node = node.reached_from
+  endwhile
+
+  return g
 endfunction
 
 function CalcF(node)
