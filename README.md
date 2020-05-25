@@ -24,17 +24,17 @@ The plugin uses two global variables for the supported motions:
 
 ```vim
 let g:pf_motions = [
-  \ {'motion': 'j', 'weight': 1},
-  \ {'motion': 'k', 'weight': 1},
-  \ {'motion': '(', 'weight': 2},
-  \ {'motion': ')', 'weight': 2},
+  \ {'motion': 'j', 'weight': 1, 'rweight': 0},
+  \ {'motion': 'k', 'weight': 1, 'rweight': 0},
+  \ {'motion': '(', 'weight': 2, 'rweight': 1},
+  \ {'motion': ')', 'weight': 2, 'rweight': 1},
   \ ...
   \ ]
 let g:pf_motions_target_line_only = [
-  \ {'motion': '0', 'weight': 2},
-  \ {'motion': '^', 'weight': 2},
-  \ {'motion': '$', 'weight': 2},
-  \ {'motion': 'g_', 'weight': 3},
+  \ {'motion': '0', 'weight': 2, 'rweight': 2},
+  \ {'motion': '^', 'weight': 2, 'rweight': 2},
+  \ {'motion': '$', 'weight': 2, 'rweight': 2},
+  \ {'motion': 'g_', 'weight': 3, 'rweight': 3},
   \ ...
   \ ]
 ```
@@ -44,9 +44,15 @@ let g:pf_motions_target_line_only = [
 is on the same line as the target, e.g. `h`, `^`, `g_`. This prevents the
 pathfinder from trying to move diagonally, as well as other weird bugs.
 
-`weight` sets the cost of each time the motion is used, and can be tuned to get
-the best results. The defaults are mainly based on the number of characters
-typed and the complexity of the motion (more complex = harder to remember).
+`weight` sets the cost of using the motion, and subsequently `rweight` sets the
+cost for each time it is repeated. These values can be tuned to get the best
+results.
+
+The defaults for `weight` are mainly based on the number of characters typed
+and the complexity of the motion (more complex = harder to remember). The
+defaults for `rweight` are based on the difficulty of counting repetitions
+by hand (it's hard to say "I need to move 42 characters right" just by looking
+at a line).
 
 
 [reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
