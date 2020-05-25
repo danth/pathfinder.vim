@@ -31,9 +31,6 @@ if !exists('g:pf_motions_target_line_only')
     \ {'motion': 'gE', 'weight': 3},
     \ ]
 endif
-if !exists('g:pf_heuristic_strength')
-  let g:pf_heuristic_strength = 0.1
-endif
 
 
 function! PathfinderBegin()
@@ -107,13 +104,16 @@ function! Backtrack(final_node)
   endwhile
 
   call reverse(motion_sequence)
+  return motion_sequence
+endfunction
 
+function! EchoKeys(motion_sequence)
   " Combine repeated motions into one with a count
   " Basically run length encoding
   let motion_string = ''
   let last_motion = ''
   let c = 0
-  for motion in motion_sequence
+  for motion in a:motion_sequence
     if last_motion !=# motion
       let motion_string = motion_string . (c > 1 ? c : '') . last_motion
       let last_motion = motion
@@ -151,20 +151,22 @@ function! PathfinderRun()
 
     if current_node.line == g:pf_end_line && current_node.col == g:pf_end_col
       " Found the target
-      return Backtrack(current_node)
+      let motion_sequence = Backtrack(current_node)
+      return EchoKeys(motion_sequence)
     endif
 
     for child_node in GetChildNodes(current_node)
       if has_key(closed_nodes, child_node.key) | continue | endif
 
       let child_node.g = current_node.g + child_node.reached_weight
-      let h = abs(g:pf_end_line - child_node.line) + abs(g:pf_end_col - child_node.col)
-      let child_node.f = child_node.g + (h * g:pf_heuristic_strength)
+      let child_node.f = child_node.g
+        \ + abs(g:pf_end_line - child_node.line)
+        \ + abs(g:pf_end_col - child_node.col)
 
       if has_key(open_nodes, child_node.key)
 	      " Replace the existing node if this one has a lower g
       	if child_node.g < open_nodes[child_node.key].g
-	        let open_nodes[child_node.key] = child_node
+	        call extend(open_nodes[child_node.key], child_node)
       	endif
       else
       	let open_nodes[child_node.key] = child_node
