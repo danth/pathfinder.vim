@@ -48,7 +48,9 @@ function! CalcG(node)
   let g = 0
 
   while has_key(node, 'reached_from')
-    if has_key(node.reached_from, 'reached_by')
+    if has_key(node, 'g')
+      return g + node.g
+    elseif has_key(node.reached_from, 'reached_by')
       \ && node.reached_from.reached_by == node.reached_by
       let g += node.reached_by.rweight
     else
@@ -144,19 +146,29 @@ function! PathfinderRun()
   let g:pf_end_line = line('.')
   let g:pf_end_col = virtcol('.')
 
-  let nodes = {}
-  let open_nodes = []
+  let closed_nodes = {}
+  let open_nodes = {}
   let motion_sequence = []
 
   let start_node = {'key': CoordString(g:pf_start_line, g:pf_start_col),
                    \ 'line': g:pf_start_line, 'col': g:pf_start_col}
-  call add(open_nodes, start_node)
+  let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
-    " Pop a node from the start of open_nodes
-    let current_node = open_nodes[0]
-    let open_nodes = open_nodes[1:]
-    let current_node['closed'] = 1
+    " Find the node with the lowest value of g
+    let current_node = values(open_nodes)[0]
+    let current_node_g = CalcG(current_node)
+    for node in values(open_nodes)
+      if CalcG(node) < current_node_g
+        let current_node = node
+        let current_node_g = CalcG(node)
+      endif
+    endfor
+    " Remove from open set
+    unlet open_nodes[current_node.key]
+    let closed_nodes[current_node.key] = current_node
+    " The path to a closed node can't change, so we can cache the g value now
+    let current_node.g = CalcG(current_node)
 
     if current_node.line == g:pf_end_line && current_node.col == g:pf_end_col
       " Found the target
@@ -165,16 +177,15 @@ function! PathfinderRun()
     endif
 
     for child_node in GetChildNodes(current_node)
-      if has_key(child_node, 'closed') | continue | endif
+      if has_key(closed_nodes, child_node.key) | continue | endif
 
-      if has_key(nodes, child_node.key)
+      if has_key(open_nodes, child_node.key)
 	      " Replace the existing node if this one has a lower g
-      	if CalcG(child_node) < CalcG(nodes[child_node.key])
-	        call extend(nodes[child_node.key], child_node)
+      	if CalcG(child_node) < CalcG(open_nodes[child_node.key])
+	        call extend(open_nodes[child_node.key], child_node)
       	endif
       else
-        let nodes[child_node.key] = child_node
-      	call add(open_nodes, child_node)
+        let open_nodes[child_node.key] = child_node
       endif
     endfor
   endwhile
