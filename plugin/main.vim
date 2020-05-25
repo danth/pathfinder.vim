@@ -1,34 +1,34 @@
 if !exists('g:pf_motions')
   let g:pf_motions = [
-    \ {'motion': 'j', 'weight': 1},
-    \ {'motion': 'k', 'weight': 1},
-    \ {'motion': '(', 'weight': 2},
-    \ {'motion': ')', 'weight': 2},
-    \ {'motion': '{', 'weight': 2},
-    \ {'motion': '}', 'weight': 2},
-    \ {'motion': '#', 'weight': 4},
-    \ {'motion': '*', 'weight': 4},
-    \ {'motion': ']m', 'weight': 2},
-    \ {'motion': '[m', 'weight': 2}
+    \ {'motion': 'j', 'weight': 1, 'rweight': 0},
+    \ {'motion': 'k', 'weight': 1, 'rweight': 0},
+    \ {'motion': '(', 'weight': 2, 'rweight': 1},
+    \ {'motion': ')', 'weight': 2, 'rweight': 1},
+    \ {'motion': '{', 'weight': 2, 'rweight': 1},
+    \ {'motion': '}', 'weight': 2, 'rweight': 1},
+    \ {'motion': '#', 'weight': 3, 'rweight': 1},
+    \ {'motion': '*', 'weight': 3, 'rweight': 1},
+    \ {'motion': ']m', 'weight': 2, 'rweight': 1},
+    \ {'motion': '[m', 'weight': 2, 'rweight': 1}
     \ ]
 endif
 if !exists('g:pf_motions_target_line_only')
   let g:pf_motions_target_line_only = [
-    \ {'motion': '0', 'weight': 2},
-    \ {'motion': '^', 'weight': 2},
-    \ {'motion': '$', 'weight': 2},
-    \ {'motion': 'g_', 'weight': 3},
-    \ {'motion': '%', 'weight': 2},
-    \ {'motion': 'h', 'weight': 1},
-    \ {'motion': 'l', 'weight': 1},
-    \ {'motion': 'w', 'weight': 2},
-    \ {'motion': 'e', 'weight': 2},
-    \ {'motion': 'b', 'weight': 2},
-    \ {'motion': 'ge', 'weight': 3},
-    \ {'motion': 'W', 'weight': 2},
-    \ {'motion': 'E', 'weight': 2},
-    \ {'motion': 'B', 'weight': 2},
-    \ {'motion': 'gE', 'weight': 3},
+    \ {'motion': '0', 'weight': 2, 'rweight': 2},
+    \ {'motion': '^', 'weight': 2, 'rweight': 2},
+    \ {'motion': '$', 'weight': 2, 'rweight': 2},
+    \ {'motion': 'g_', 'weight': 3, 'rweight': 3},
+    \ {'motion': '%', 'weight': 2, 'rweight': 2},
+    \ {'motion': 'h', 'weight': 1, 'rweight': 1},
+    \ {'motion': 'l', 'weight': 1, 'rweight': 1},
+    \ {'motion': 'w', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'e', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'b', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'ge', 'weight': 3, 'rweight': 0},
+    \ {'motion': 'W', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'E', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'B', 'weight': 2, 'rweight': 0},
+    \ {'motion': 'gE', 'weight': 3, 'rweight': 0},
     \ ]
 endif
 
@@ -41,13 +41,40 @@ endfunction
 command PathfinderBegin call PathfinderBegin()
 
 
+function! CalcG(node)
+  " The G value can change based on the previously typed motions, so it must be
+  " recalculated each time
+  if has_key(a:node, 'reached_from')
+    return CalcG(a:node.reached_from) +
+      \ (has_key(a:node.reached_from, 'reached_by')
+      \  && a:node.reached_from.reached_by == a:node.reached_by)
+      \ ? a:node.reached_by.rweight : a:node.reached_by.weight
+  elseif has_key(a:node, 'reached_by')
+    return a:node.reached_by.weight
+  else
+    " This is the start node
+    return 0
+  endif
+endfunction
+
+function CalcF(node)
+  return CalcG(a:node)
+    \ + abs(g:pf_end_line - a:node.line)
+    \ + abs(g:pf_end_col - a:node.col)
+endfunction
+
 function! MinF(open_nodes)
   let min_node = values(a:open_nodes)[0]
+  let min_node_f = CalcF(min_node)
+
   for [key, node] in items(a:open_nodes)[1:]
-    if node.f < min_node.f
+    let node_f = CalcF(node)
+    if node_f < min_node_f
       let min_node = node
+      let min_node_f = node_f
     endif
   endfor
+
   return min_node
 endfunction
 
@@ -55,10 +82,10 @@ function! CoordString(l, c)
   return a:l . ',' . a:c
 endfunction
 
-function! CreateNode(l, c, rb, rw, rf)
+function! CreateNode(l, c, rb, rf)
   let key = CoordString(a:l, a:c)
   return {'key': key, 'line': a:l, 'col': a:c,
-    \ 'reached_by': a:rb, 'reached_weight': a:rw, 'reached_from': a:rf}
+    \ 'reached_by': a:rb, 'reached_from': a:rf}
 endfunction
 
 function! DoMotion(node, child_nodes, motion)
@@ -73,8 +100,7 @@ function! DoMotion(node, child_nodes, motion)
   if line('.') != a:node['line'] || virtcol('.') != a:node['col']
     " Only add the child node if the motion had an effect
     " This means we don't add things such as l at the end of a line
-    call add(a:child_nodes, CreateNode(
-      \ line('.'), virtcol('.'), a:motion['motion'], a:motion['weight'], a:node))
+    call add(a:child_nodes, CreateNode(line('.'), virtcol('.'), a:motion, a:node))
   endif
 endfunction
 
@@ -98,8 +124,8 @@ endfunction
 function! Backtrack(final_node)
   let node = a:final_node
   let motion_sequence = []
-  while node.f > 0
-    call add(motion_sequence, node.reached_by)
+  while has_key(node, 'reached_from')
+    call add(motion_sequence, node.reached_by.motion)
     let node = node.reached_from
   endwhile
 
@@ -140,9 +166,8 @@ function! PathfinderRun()
   let closed_nodes = {}
   let motion_sequence = []
 
-  let start_node = CreateNode(g:pf_start_line, g:pf_start_col, '', 0, 0)
-  let start_node.g = 0
-  let start_node.f = 0
+  let start_node = {'key': CoordString(g:pf_start_line, g:pf_start_col),
+                   \ 'line': g:pf_start_line, 'col': g:pf_start_col}
   let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
@@ -159,14 +184,9 @@ function! PathfinderRun()
     for child_node in GetChildNodes(current_node)
       if has_key(closed_nodes, child_node.key) | continue | endif
 
-      let child_node.g = current_node.g + child_node.reached_weight
-      let child_node.f = child_node.g
-        \ + abs(g:pf_end_line - child_node.line)
-        \ + abs(g:pf_end_col - child_node.col)
-
       if has_key(open_nodes, child_node.key)
 	      " Replace the existing node if this one has a lower g
-      	if child_node.g < open_nodes[child_node.key].g
+      	if CalcG(child_node) < CalcG(open_nodes[child_node.key])
 	        call extend(open_nodes[child_node.key], child_node)
       	endif
       else
