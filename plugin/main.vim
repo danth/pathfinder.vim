@@ -39,7 +39,7 @@ endif
 function! PathfinderBegin()
   " Record the current cursor position
   let g:pf_start_line = line('.')
-  let g:pf_start_col = col('.')
+  let g:pf_start_col = virtcol('.')
 endfunction
 command PathfinderBegin call PathfinderBegin()
 
@@ -73,11 +73,11 @@ function! DoMotion(node, child_nodes, motion)
     return
   endtry
 
-  if line('.') != a:node['line'] || col('.') != a:node['col']
+  if line('.') != a:node['line'] || virtcol('.') != a:node['col']
     " Only add the child node if the motion had an effect
     " This means we don't add things such as l at the end of a line
     call add(a:child_nodes, CreateNode(
-      \ line('.'), col('.'), a:motion['motion'], a:motion['weight'], a:node))
+      \ line('.'), virtcol('.'), a:motion['motion'], a:motion['weight'], a:node))
   endif
 endfunction
 
@@ -134,7 +134,7 @@ function! PathfinderRun()
   endif
 
   let g:pf_end_line = line('.')
-  let g:pf_end_col = col('.')
+  let g:pf_end_col = virtcol('.')
 
   let open_nodes = {}
   let closed_nodes = {}
