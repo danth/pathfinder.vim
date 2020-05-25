@@ -145,6 +145,7 @@ function! PathfinderRun()
 
   let w:pf_end_line = line('.')
   let w:pf_end_col = virtcol('.')
+  let initial_view = winsaveview()
 
   let closed_nodes = {}
   let open_nodes = {}
@@ -190,7 +191,7 @@ function! PathfinderRun()
     endfor
   endwhile
 
-  execute 'normal! ' . w:pf_end_line . 'G' . w:pf_end_col . '|'
+  call winrestview(initial_view)
   redraw
   if len(motion_sequence)
     call EchoKeys(motion_sequence)
