@@ -73,9 +73,9 @@ function! CreateNode(l, c, rb, rf)
 endfunction
 
 function! DoMotion(node, child_nodes, motion)
-  " Move to this node's character, then run the movement
+  call cursor(a:node.line, a:node.col)
   try
-    execute 'silent! normal! ' . a:node['line'] . 'G' . a:node['col'] . '|' . a:motion['motion']
+    execute 'silent! normal! ' . a:motion['motion']
   catch
     " Ignore motions which cause an error
     return
