@@ -138,6 +138,7 @@ function! PathfinderRun()
 
   let open_nodes = {}
   let closed_nodes = {}
+  let motion_sequence = []
 
   let start_node = CreateNode(g:pf_start_line, g:pf_start_col, '', 0, 0)
   let start_node.g = 0
@@ -152,7 +153,7 @@ function! PathfinderRun()
     if current_node.line == g:pf_end_line && current_node.col == g:pf_end_col
       " Found the target
       let motion_sequence = Backtrack(current_node)
-      return EchoKeys(motion_sequence)
+      break
     endif
 
     for child_node in GetChildNodes(current_node)
@@ -173,5 +174,12 @@ function! PathfinderRun()
       endif
     endfor
   endwhile
+
+  execute 'normal! ' . g:pf_end_line . 'G' . g:pf_end_col . '|'
+  if len(motion_sequence)
+    call EchoKeys(motion_sequence)
+  else
+    echom 'No path found'
+  endif
 endfunction
 command PathfinderRun call PathfinderRun()
