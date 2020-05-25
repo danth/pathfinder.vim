@@ -176,6 +176,7 @@ function! PathfinderRun()
   endwhile
 
   execute 'normal! ' . g:pf_end_line . 'G' . g:pf_end_col . '|'
+  redraw
   if len(motion_sequence)
     call EchoKeys(motion_sequence)
   else
