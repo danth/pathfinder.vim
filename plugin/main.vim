@@ -41,35 +41,16 @@ endfunction
 command PathfinderBegin call PathfinderBegin()
 
 
-function! CalcG(node)
-  " The G value can change based on the previously typed motions, so it must be
-  " recalculated each time
-  let node = a:node
-  let g = 0
-
-  while has_key(node, 'reached_from')
-    if has_key(node, 'g')
-      return g + node.g
-    elseif has_key(node.reached_from, 'reached_by')
-      \ && node.reached_from.reached_by == node.reached_by
-      let g += node.reached_by.rweight
-    else
-      let g += node.reached_by.weight
-    endif
-    let node = node.reached_from
-  endwhile
-
-  return g
-endfunction
-
 function! CoordString(l, c)
   return a:l . ',' . a:c
 endfunction
 
 function! CreateNode(l, c, rb, rf)
   let key = CoordString(a:l, a:c)
-  return {'key': key, 'line': a:l, 'col': a:c,
-    \ 'reached_by': a:rb, 'reached_from': a:rf}
+  let g = (has_key(a:rf, 'reached_by') && a:rf.reached_by == a:rb)
+        \ ? a:rb.rweight : a:rb.weight
+  return {'key': key, 'line': a:l, 'col': a:c, 'g': a:rf.g + g,
+        \ 'reached_by': a:rb, 'reached_from': a:rf}
 endfunction
 
 function! DoMotion(node, child_nodes, motion)
@@ -152,24 +133,20 @@ function! PathfinderRun()
   let motion_sequence = []
 
   let start_node = {'key': CoordString(w:pf_start_line, w:pf_start_col),
-                   \ 'line': w:pf_start_line, 'col': w:pf_start_col}
+                   \ 'line': w:pf_start_line, 'col': w:pf_start_col, 'g': 0}
   let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
     " Find the node with the lowest value of g
     let current_node = values(open_nodes)[0]
-    let current_node_g = CalcG(current_node)
     for node in values(open_nodes)
-      if CalcG(node) < current_node_g
+      if node.g < current_node.g
         let current_node = node
-        let current_node_g = CalcG(node)
       endif
     endfor
     " Remove from open set
     unlet open_nodes[current_node.key]
     let closed_nodes[current_node.key] = current_node
-    " The path to a closed node can't change, so we can cache the g value now
-    let current_node.g = CalcG(current_node)
 
     if current_node.line == w:pf_end_line && current_node.col == w:pf_end_col
       " Found the target
@@ -182,7 +159,7 @@ function! PathfinderRun()
 
       if has_key(open_nodes, child_node.key)
 	      " Replace the existing node if this one has a lower g
-      	if CalcG(child_node) < CalcG(open_nodes[child_node.key])
+      	if child_node.g < open_nodes[child_node.key].g
 	        call extend(open_nodes[child_node.key], child_node)
       	endif
       else
