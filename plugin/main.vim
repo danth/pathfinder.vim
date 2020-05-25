@@ -35,8 +35,8 @@ endif
 
 function! PathfinderBegin()
   " Record the current cursor position
-  let g:pf_start_line = line('.')
-  let g:pf_start_col = virtcol('.')
+  let w:pf_start_line = line('.')
+  let w:pf_start_col = virtcol('.')
 endfunction
 command PathfinderBegin call PathfinderBegin()
 
@@ -96,7 +96,7 @@ function! GetChildNodes(node)
   endfor
 
   " If we are on the same line as the target position, use these too
-  if a:node['line'] == g:pf_end_line
+  if a:node['line'] == w:pf_end_line
     for motion in g:pf_motions_target_line_only
       call DoMotion(a:node, child_nodes, motion)
     endfor
@@ -138,20 +138,20 @@ function! EchoKeys(motion_sequence)
 endfunction
 
 function! PathfinderRun()
-  if !exists('g:pf_start_line') || !exists('g:pf_start_col')
+  if !exists('w:pf_start_line') || !exists('w:pf_start_col')
     echom 'Please run :PathfinderBegin to set a start position first'
     return
   endif
 
-  let g:pf_end_line = line('.')
-  let g:pf_end_col = virtcol('.')
+  let w:pf_end_line = line('.')
+  let w:pf_end_col = virtcol('.')
 
   let closed_nodes = {}
   let open_nodes = {}
   let motion_sequence = []
 
-  let start_node = {'key': CoordString(g:pf_start_line, g:pf_start_col),
-                   \ 'line': g:pf_start_line, 'col': g:pf_start_col}
+  let start_node = {'key': CoordString(w:pf_start_line, w:pf_start_col),
+                   \ 'line': w:pf_start_line, 'col': w:pf_start_col}
   let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
@@ -170,7 +170,7 @@ function! PathfinderRun()
     " The path to a closed node can't change, so we can cache the g value now
     let current_node.g = CalcG(current_node)
 
-    if current_node.line == g:pf_end_line && current_node.col == g:pf_end_col
+    if current_node.line == w:pf_end_line && current_node.col == w:pf_end_col
       " Found the target
       let motion_sequence = Backtrack(current_node)
       break
@@ -190,7 +190,7 @@ function! PathfinderRun()
     endfor
   endwhile
 
-  execute 'normal! ' . g:pf_end_line . 'G' . g:pf_end_col . '|'
+  execute 'normal! ' . w:pf_end_line . 'G' . w:pf_end_col . '|'
   redraw
   if len(motion_sequence)
     call EchoKeys(motion_sequence)
