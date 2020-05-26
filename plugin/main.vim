@@ -45,27 +45,24 @@ endif
 
 
 function! PathfinderBegin()
-  " Record the current cursor position
-  let b:pf_start_line = line('.')
-  let b:pf_start_col = virtcol('.')
+  let b:pf_start = winsaveview()
+  echom 'Move to target location and then :PathfinderRun'
 endfunction
 command PathfinderBegin call PathfinderBegin()
 
 
-function! CoordString(l, c)
-  return a:l . ',' . a:c
-endfunction
-
-function! CreateNode(l, c, rb, rf)
-  let key = CoordString(a:l, a:c)
+function! CreateNode(view, rb, rf)
   let g = (has_key(a:rf, 'reached_by') && a:rf.reached_by == a:rb)
         \ ? a:rb.rweight : a:rb.weight
-  return {'key': key, 'line': a:l, 'col': a:c, 'g': a:rf.g + g,
-        \ 'reached_by': a:rb, 'reached_from': a:rf}
+  return {'key': a:view.lnum . ',' . a:view.col,
+        \ 'view': a:view,
+        \ 'g': a:rf.g + g,
+        \ 'reached_by': a:rb,
+        \ 'reached_from': a:rf}
 endfunction
 
 function! DoMotion(node, child_nodes, motion)
-  call cursor(a:node.line, a:node.col)
+  call winrestview(a:node.view)
   try
     execute 'silent! normal! ' . a:motion.motion
   catch
@@ -73,10 +70,10 @@ function! DoMotion(node, child_nodes, motion)
     return
   endtry
 
-  if line('.') != a:node.line || virtcol('.') != a:node.col
+  if winsaveview().lnum != a:node.view.lnum || winsaveview().col != a:node.view.col
     " Only add the child node if the motion had an effect
     " This means we don't add things such as l at the end of a line
-    call add(a:child_nodes, CreateNode(line('.'), virtcol('.'), a:motion, a:node))
+    call add(a:child_nodes, CreateNode(winsaveview(), a:motion, a:node))
   endif
 endfunction
 
@@ -121,21 +118,19 @@ function! EchoKeys(motion_sequence)
 endfunction
 
 function! PathfinderRun()
-  if !exists('b:pf_start_line') || !exists('b:pf_start_col')
+  if !exists('b:pf_start')
     echom 'Please run :PathfinderBegin to set a start position first'
     return
   endif
 
-  let b:pf_end_line = line('.')
-  let b:pf_end_col = virtcol('.')
-  let initial_view = winsaveview()
+  let b:pf_target = winsaveview()
 
   let closed_nodes = {}
   let open_nodes = {}
   let motion_sequence = []
 
-  let start_node = {'key': CoordString(b:pf_start_line, b:pf_start_col),
-                   \ 'line': b:pf_start_line, 'col': b:pf_start_col, 'g': 0}
+  let start_node = {'key': b:pf_start.lnum . ',' . b:pf_start.col,
+                   \ 'view': b:pf_start, 'g': 0}
   let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
@@ -150,7 +145,8 @@ function! PathfinderRun()
     unlet open_nodes[current_node.key]
     let closed_nodes[current_node.key] = current_node
 
-    if current_node.line == b:pf_end_line && current_node.col == b:pf_end_col
+    " We don't want to compare the scroll position
+    if current_node.view.lnum == b:pf_target.lnum && current_node.view.col == b:pf_target.col
       " Found the target
       let motion_sequence = Backtrack(current_node)
       break
@@ -170,7 +166,7 @@ function! PathfinderRun()
     endfor
   endwhile
 
-  call winrestview(initial_view)
+  call winrestview(start_node.view)
   redraw
   if len(motion_sequence)
     call EchoKeys(motion_sequence)
