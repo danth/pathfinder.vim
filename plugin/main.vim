@@ -2,7 +2,7 @@ function! PathfinderBegin()
   let b:pf_start = winsaveview()
   echom 'Move to target location and then :PathfinderRun'
 endfunction
-command PathfinderBegin call PathfinderBegin()
+command! PathfinderBegin call PathfinderBegin()
 
 
 function! CreateNode(view, rb, rf)
@@ -128,4 +128,4 @@ function! PathfinderRun()
     echom 'No path found'
   endif
 endfunction
-command PathfinderRun call PathfinderRun()
+command! PathfinderRun call PathfinderRun()
