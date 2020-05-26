@@ -11,6 +11,8 @@ available.
 There is also a possibility of extending the script in the future to work with
 other types of edits, such as operators, macros, marks and so on.
 
+[reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
+
 ## Installation
 
 Use your favorite plugin manager. I recommend
@@ -35,31 +37,46 @@ practice the optimal motion. Learn by usage!
 
 ## Configuration
 
+*pathfinder.vim works out-of-the box with the default configuration. You don't
+need to read this section if you don't want to.*
+
 The plugin uses a global variable to set the available motions:
 
 ```vim
 let g:pf_motions = [
-  \ {'motion': 'h', 'weight': 1, 'rweight': 1},
-  \ {'motion': 'l', 'weight': 1, 'rweight': 1},
-  \ {'motion': 'j', 'weight': 1, 'rweight': 0.1},
-  \ {'motion': 'k', 'weight': 1, 'rweight': 0.1},
+  \ {'motion': 'h', 'weight': 1},
+  \ {'motion': 'l', 'weight': 1},
+  \ {'motion': 'j', 'weight': 1},
+  \ {'motion': 'k', 'weight': 1},
   \ ...
   \ ]
 ```
 
-This contains all supported motions by default, so you only need to change it
-if you want to adjust the weighting.
+This contains all the supported motions by default, so you only need to change
+it if you want to adjust the weighting or delete some of them.
 
-`weight` sets the cost of using the motion, and `rweight` sets the cost of
-each time it is repeated after that. Setting the `rweight`s lower than the
-`weight`s means that it is preferred to repeat the same motion again than to
-use two different motions.
+Each motion has a weight associated with it. The higher the weight, the less
+the pathfinding algorithm wants to use that motion. The path with the lowest
+total weight wins. The default settings use the number of characters in the
+motion as its weight.
 
-The weights in the default settings are just the number of keypresses to perform
-the motion. `rweight` is set to 1 for almost everything.
+However, repeating a motion will not use its predefined weight. Instead, the
+cost is calculated based on the effect adding another repetition will have on
+the string length of the count. This is easier to explain with examples:
 
+| Motion | Cost of adding the repetition |
+| --- | --- |
+| `j` | (uses configured weight) |
+| `j` -> `2j` | 1, since the `2` has been added |
+| `2j` -> `3j` | 0, because `3j` is no longer than `2j` |
+| `9j` -> `10j` | 1, since `10j` is a character longer than `9j` |
+| `1j` -> `100j` | 2, since `100j` is 2 characters longer than `1j` |
 
-[reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
+It is recommended that the only modifications you make to the list are:
+
+- Increasing the weight of motions you don't like
+- Deleting motions you never want to use
+- Changing the order of motions to put the ones you prefer first
 
 ## Related Plugins
 

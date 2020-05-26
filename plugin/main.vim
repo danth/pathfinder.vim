@@ -5,14 +5,37 @@ endfunction
 command! PathfinderBegin call PathfinderBegin()
 
 
+function! CalcGIncrement(node)
+  " Count how many times the reached_by motion has been repeated
+  let current_node = a:node
+  let repetition_count = 0
+  while current_node.reached_by == a:node.reached_by
+    let repetition_count += 1
+    let current_node = current_node.reached_from
+
+    if !has_key(current_node, 'reached_by')
+      break " We reached the start node
+    endif
+  endwhile
+
+  " If the count is 1 (first time used), return the set weight of the motion
+  if repetition_count == 1 | return a:node.reached_by.weight | endif
+
+  " Otherwise, return how many characters the count has increased in length by
+  " e.g. 2 -> 3 is 0, 9 -> 10 is 1, 1 -> 100 would be 2
+  if repetition_count == 2
+    return 1 " 2 is a special case since 1 can be omitted
+  endif
+  return len(repetition_count) - len(repetition_count - 1)
+endfunction
+
 function! CreateNode(view, rb, rf)
-  let g = (has_key(a:rf, 'reached_by') && a:rf.reached_by == a:rb)
-        \ ? a:rb.rweight : a:rb.weight
-  return {'key': a:view.lnum . ',' . a:view.col,
-        \ 'view': a:view,
-        \ 'g': a:rf.g + g,
-        \ 'reached_by': a:rb,
-        \ 'reached_from': a:rf}
+  let node = {'key': a:view.lnum . ',' . a:view.col,
+            \ 'view': a:view,
+            \ 'reached_by': a:rb,
+            \ 'reached_from': a:rf}
+  let node.g = a:rf.g + CalcGIncrement(node)
+  return node
 endfunction
 
 function! DoMotion(node, child_nodes, motion)
