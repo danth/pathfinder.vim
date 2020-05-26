@@ -30,10 +30,10 @@ The plugin uses a global variable which lists the supported motions:
 
 ```vim
 let g:pf_motions = [
-  \ {'motion': 'j', 'weight': 2, 'rweight': 1},
-  \ {'motion': 'k', 'weight': 2, 'rweight': 1},
-  \ {'motion': 'gj', 'weight': 3, 'rweight': 1},
-  \ {'motion': 'gk', 'weight': 3, 'rweight': 1},
+  \ {'motion': 'h', 'weight': 1, 'rweight': 1},
+  \ {'motion': 'l', 'weight': 1, 'rweight': 1},
+  \ {'motion': 'j', 'weight': 1, 'rweight': 0.1},
+  \ {'motion': 'k', 'weight': 1, 'rweight': 0.1},
   \ ...
   \ ]
 ```
@@ -46,7 +46,7 @@ means that it is preferred to repeat the same motion again than to use two
 different motions.
 
 The weights in the default settings are just the number of keypresses to perform
-the motion. `rweight` is set to 1 for everything.
+the motion. `rweight` is set to 1 for almost everything.
 
 
 [reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
