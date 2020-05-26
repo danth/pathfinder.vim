@@ -3,9 +3,10 @@
 An experimental Vim plugin based on [this Reddit post][reddit].
 
 Taking a cursor start position and an end position, it uses Dijkstra's
-algorithm to find most efficient combination of motions to move between them.
-This can be used to discover new ways of doing things, which is especially
-helpful for beginners who are not familiar with the options available.
+algorithm to find the most optimal combination of motions to move between
+them. This can be used to discover new ways of doing things, which is
+especially helpful for beginners who are not familiar with the options
+available.
 
 There is also a possibility of extending the script in the future to work with
 other types of edits, such as operators, macros, marks and so on.
@@ -15,18 +16,26 @@ other types of edits, such as operators, macros, marks and so on.
 Use your favorite plugin manager. I recommend
 [vim-plug](https://github.com/junegunn/vim-plug).
 
+```vim
+Plug 'AlphaMycelium/pathfinder.vim'
+```
+
 ## Usage
 
-1. `:PathfinderBegin` with your cursor over the starting position
-2. Move to the ending position (within the same buffer) using whatever
-   inefficient method you like
-1. `:PathfinderRun` with your cursor on the end position
+1. Place your cursor on a starting position.
+2. Run `:PathfinderBegin`.
+3. Move the cursor to another position (within the same buffer).
+4. Use `:PathfinderRun` to see the most optimal set of movements you should
+   have used in step 3.
 
 Note that long-distance movements can take a while to process.
 
+Your cursor will return to the starting position, which gives you a chance to
+practice the optimal motion. Learn by usage!
+
 ## Configuration
 
-The plugin uses a global variable which lists the supported motions:
+The plugin uses a global variable to set the available motions:
 
 ```vim
 let g:pf_motions = [
@@ -38,10 +47,13 @@ let g:pf_motions = [
   \ ]
 ```
 
-`weight` sets the cost of using each motion, and `rweight` sets the cost of
-each time it is repeated after that. Setting `rweight` lower than `weight`
-means that it is preferred to repeat the same motion again than to use two
-different motions.
+This contains all supported motions by default, so you only need to change it
+if you want to adjust the weighting.
+
+`weight` sets the cost of using the motion, and `rweight` sets the cost of
+each time it is repeated after that. Setting the `rweight`s lower than the
+`weight`s means that it is preferred to repeat the same motion again than to
+use two different motions.
 
 The weights in the default settings are just the number of keypresses to perform
 the motion. `rweight` is set to 1 for almost everything.
