@@ -50,3 +50,8 @@ the motion. `rweight` is set to 1 for almost everything.
 
 
 [reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
+
+## Related Plugins
+
+- [vim-be-good](https://github.com/ThePrimeagen/vim-be-good) - Various training games to practice certain actions
+- [vim-hardtime](https://github.com/takac/vim-hardtime) - Prevent yourself from repeating keys like `h`,`j`,`k`,`l`
