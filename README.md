@@ -38,8 +38,6 @@ let g:pf_motions = [
   \ ]
 ```
 
-`g:pf_motions` contains motions which can be used anywhere in the file.
-
 `weight` sets the cost of using each motion, and `rweight` sets the cost of
 each time it is repeated after that. Setting `rweight` lower than `weight`
 means that it is preferred to repeat the same motion again than to use two
