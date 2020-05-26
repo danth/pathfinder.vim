@@ -46,8 +46,8 @@ endif
 
 function! PathfinderBegin()
   " Record the current cursor position
-  let w:pf_start_line = line('.')
-  let w:pf_start_col = virtcol('.')
+  let b:pf_start_line = line('.')
+  let b:pf_start_col = virtcol('.')
 endfunction
 command PathfinderBegin call PathfinderBegin()
 
@@ -121,21 +121,21 @@ function! EchoKeys(motion_sequence)
 endfunction
 
 function! PathfinderRun()
-  if !exists('w:pf_start_line') || !exists('w:pf_start_col')
+  if !exists('b:pf_start_line') || !exists('b:pf_start_col')
     echom 'Please run :PathfinderBegin to set a start position first'
     return
   endif
 
-  let w:pf_end_line = line('.')
-  let w:pf_end_col = virtcol('.')
+  let b:pf_end_line = line('.')
+  let b:pf_end_col = virtcol('.')
   let initial_view = winsaveview()
 
   let closed_nodes = {}
   let open_nodes = {}
   let motion_sequence = []
 
-  let start_node = {'key': CoordString(w:pf_start_line, w:pf_start_col),
-                   \ 'line': w:pf_start_line, 'col': w:pf_start_col, 'g': 0}
+  let start_node = {'key': CoordString(b:pf_start_line, b:pf_start_col),
+                   \ 'line': b:pf_start_line, 'col': b:pf_start_col, 'g': 0}
   let open_nodes[start_node.key] = start_node
 
   while len(open_nodes) > 0
@@ -150,7 +150,7 @@ function! PathfinderRun()
     unlet open_nodes[current_node.key]
     let closed_nodes[current_node.key] = current_node
 
-    if current_node.line == w:pf_end_line && current_node.col == w:pf_end_col
+    if current_node.line == b:pf_end_line && current_node.col == b:pf_end_col
       " Found the target
       let motion_sequence = Backtrack(current_node)
       break
