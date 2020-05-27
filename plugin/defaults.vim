@@ -10,6 +10,10 @@ if !exists('g:pf_motions')
     \ {'motion': 'gg', 'weight': 2},
     \ {'motion': 'G', 'weight': 1},
     \
+    \ {'motion': 'H', 'weight': 1},
+    \ {'motion': 'M', 'weight': 1},
+    \ {'motion': 'L', 'weight': 1},
+    \
     \ {'motion': '0', 'weight': 1},
     \ {'motion': '^', 'weight': 1},
     \ {'motion': 'g^', 'weight': 2},
