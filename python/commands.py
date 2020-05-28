@@ -1,8 +1,8 @@
-import vim
 import itertools
 
-from window import winsaveview, winrestview
+import vim
 from pathfinder import find_path
+from window import winrestview, winsaveview
 
 
 def pathfinder_run():
@@ -22,4 +22,3 @@ def pathfinder_run():
         output += motion.motion
 
     print(output)
-

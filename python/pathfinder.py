@@ -1,7 +1,7 @@
-import vim
 import heapq
 
-from window import winsaveview, winrestview
+import vim
+from window import winrestview, winsaveview
 
 
 class Motion:
@@ -17,6 +17,7 @@ class StartNode:
     :param view: The view representing the position this node is at, obtained from
         winsaveview().
     """
+
     def __init__(self, view):
         self.view = view
         self.g = 0
@@ -69,6 +70,7 @@ class Node(StartNode):
     :param parent: Parent node.
     :param motion: Initial motion to add to incoming_motions.
     """
+
     def __init__(self, view, parent, motion):
         self.view = view
         self.parent = parent
@@ -91,7 +93,7 @@ class Node(StartNode):
             return 1  # Count has been added, e.g. j -> 2j
         else:
             # Calculate difference in count lengths, e.g. 2j -> 3j = 0, 9j -> 10j = 1
-            return len(str(repetitions)) - len(str(repetitions-1))
+            return len(str(repetitions)) - len(str(repetitions - 1))
 
     def backtrack(self):
         """
@@ -142,8 +144,8 @@ class Node(StartNode):
         # Select the best motions from the available options.
         motions = list()
         for i, centre in enumerate(motion_options):
-            left = motion_options[i-1] if i > 0 else []
-            right = motion_options[i+1] if i < len(motion_options) - 1 else []
+            left = motion_options[i - 1] if i > 0 else []
+            right = motion_options[i + 1] if i < len(motion_options) - 1 else []
             motions.append(best_motion_from_triplet(left, centre, right))
 
         return motions
@@ -155,8 +157,8 @@ def find_path(from_view, target_view):
     locations.
     """
     if (
-        from_view["lnum"] == target_view["lnum"] and
-        from_view["col"] == target_view["col"]
+        from_view["lnum"] == target_view["lnum"]
+        and from_view["col"] == target_view["col"]
     ):
         # Start and target are the same position
         return []
@@ -178,8 +180,8 @@ def find_path(from_view, target_view):
         current_node.closed = True
 
         if (
-            current_node.view["lnum"] == target_view["lnum"] and
-            current_node.view["col"] == target_view["col"]
+            current_node.view["lnum"] == target_view["lnum"]
+            and current_node.view["col"] == target_view["col"]
         ):
             # We found the target!
             return current_node.get_refined_path()
@@ -199,8 +201,8 @@ def find_path(from_view, target_view):
                     continue
 
                 if (
-                    child_node.g == preexisting_child_node.g and
-                    child_node.parent == preexisting_child_node.parent
+                    child_node.g == preexisting_child_node.g
+                    and child_node.parent == preexisting_child_node.parent
                 ):
                     # Same g, add motion as an alternative.
                     # Since we don't know what motions are coming in the path ahead,
@@ -220,4 +222,3 @@ def find_path(from_view, target_view):
                 heapq.heappush(open_nodes, child_node)
 
     raise Exception("No path found")
-
