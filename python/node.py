@@ -23,7 +23,7 @@ class StartNode:
         Attempt to run the given motion from this node's position within Vim.
 
         :returns: Newly-created child node, if the motion moved the cursor to another
-            position did not cause an error. Otherwise None.
+            position and did not cause an error. Otherwise None.
         """
         winrestview(self.view)
         try:
@@ -34,7 +34,7 @@ class StartNode:
 
         new_view = winsaveview()
         if not cursor_in_same_position(new_view, self.view):
-            # The cursor hals moved, return the newly created node
+            # The cursor has moved, return the newly created node
             return Node(new_view, self, motion)
 
     def __eq__(self, other):
