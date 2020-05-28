@@ -1,5 +1,7 @@
 # pathfinder.vim
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/maintainability)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/maintainability)
+
 An experimental Vim plugin based on [this Reddit post][reddit].
 
 Taking a cursor start position and an end position, it uses Dijkstra's

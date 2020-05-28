@@ -1,0 +1,8 @@
+cmdargs:
+  severity: style_problem
+
+policies:
+  ProhibitUnusedVariable:
+    enabled: true
+  ProhibitImplicitScopeVariable:
+    enabled: false
