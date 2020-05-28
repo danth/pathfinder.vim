@@ -2,12 +2,15 @@ import itertools
 
 import vim
 from pathfinder import find_path
-from window import winrestview, winsaveview
+from window import cursor_in_same_position, winrestview, winsaveview
 
 
 def pathfinder_run():
     start = vim.current.buffer.vars["pf_start"]
     target = winsaveview()
+
+    if cursor_in_same_position(start, target):
+        return print("No motions used")
 
     motions = find_path(start, target)
 
