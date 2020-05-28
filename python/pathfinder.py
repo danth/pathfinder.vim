@@ -1,7 +1,7 @@
 import heapq
 
 import vim
-from node import StartNode, Node
+from node import Node, StartNode
 from window import cursor_in_same_position
 
 
@@ -24,10 +24,7 @@ def update_preexisting_node(node, preexisting_node, open_nodes):
     if node is None or preexisting_node.closed:
         return
 
-    if (
-        node.g == preexisting_node.g
-        and node.parent == preexisting_node.parent
-    ):
+    if node.g == preexisting_node.g and node.parent == preexisting_node.parent:
         # Same g, add motion as an alternative.
         # Since we don't know what motions are coming in the path ahead,
         # we can't process the tiebreaking (select the motion which can
