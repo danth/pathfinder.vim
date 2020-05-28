@@ -22,6 +22,12 @@ Use your favorite plugin manager. I recommend
 Plug 'AlphaMycelium/pathfinder.vim'
 ```
 
+pathfinder.vim requires Vim to be compiled with the `+python3` feature.
+
+```vim
+:echo has('python3')
+```
+
 ## Usage
 
 1. Place your cursor on a starting position.
