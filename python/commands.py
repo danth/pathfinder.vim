@@ -1,7 +1,7 @@
 import itertools
 
 import vim
-from pathfinder import find_path
+from pathfinder import Path
 from window import cursor_in_same_position, winrestview, winsaveview
 
 
@@ -12,7 +12,8 @@ def pathfinder_run():
     if cursor_in_same_position(start, target):
         return print("No motions used")
 
-    motions = find_path(start, target)
+    path = Path(start, target)
+    motions = path.find_path()
 
     # Restore the cursor to where it was when :PathfinderBegin was ran
     winrestview(start)
