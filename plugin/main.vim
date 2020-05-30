@@ -31,11 +31,11 @@ else
   function! PollResponses(timer)
     python3 client.poll_responses()
   endfunction
-  let timer = timer_start(100, 'PollResponses', {'repeat': -1})
+  let s:timer = timer_start(100, 'PollResponses', {'repeat': -1})
 
   augroup CloseServerOnQuit
     autocmd!
-    autocmd VimLeave * call timer_stop(timer)
+    autocmd VimLeave * call timer_stop(s:timer)
     autocmd VimLeave * python3 client.close()
   augroup END
 
