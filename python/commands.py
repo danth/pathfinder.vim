@@ -1,28 +1,41 @@
 import itertools
 
 import vim
-from pathfinder import Path
+from client import client
 from window import cursor_in_same_position, winrestview, winsaveview
 
 
+start = None
+
+
+def pathfinder_begin():
+    global start
+    start = winsaveview()
+    print("Move to target location and then :PathfinderRun")
+
+
 def pathfinder_run():
-    start = vim.current.buffer.vars["pf_start"]
+    if start is None:
+        return print("Please run :PathfinderBegin to set a start position first")
+
     target = winsaveview()
-
     if cursor_in_same_position(start, target):
-        return print("No motions used")
+        return print("No motions required")
 
-    path = Path(start, target)
-    motions = path.find_path()
+    def display_results(motions):
+        output = ""
+        for motion, group in itertools.groupby(motions):
+            repetitions = len(list(group))
+            # Add a count only if there is more than 1 repetition
+            motion_str = (str(repetitions) if repetitions > 1 else "") + motion.motion
+            # Pad all motions to 5 characters wide so the descriptions are aligned
+            padding = " " * (5 - len(motion_str))
 
-    # Restore the cursor to where it was when :PathfinderBegin was ran
-    winrestview(start)
+            output += motion_str + padding + motion.description(repetitions) + "\n"
 
-    for motion, group in itertools.groupby(motions):
-        repetitions = len(list(group))
-        # Add a count only if there is more than 1 repetition
-        motion_str = (str(repetitions) if repetitions > 1 else "") + motion.motion
+        # Printing multiple lines doesn't make a hit-enter prompt appear so we
+        # pass the string to the echo command instead
+        # replace(', \') escapes ' characters
+        vim.command("echo \"" + output.replace("'", "\\'") + '"')
 
-        # Pad all motions to 5 characters wide so the descriptions are aligned
-        padding = " " * (5 - len(motion_str))
-        print(motion_str, motion.description(repetitions), sep=padding)
+    client.pathfind(start, target, display_results)
