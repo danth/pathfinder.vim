@@ -99,5 +99,9 @@ def loop():
         current_state = new_state
 
 
+def stop():
+    """Called when Vim is about to shut down."""
+    client.close()
+
 # Call reset to set the initial state
 reset()
