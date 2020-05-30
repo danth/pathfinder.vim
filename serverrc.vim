@@ -1,7 +1,6 @@
 set nocompatible
 
 " Disable unnecessary features
-set history=0
 set noruler
 set nonumber
 set noshowcmd
