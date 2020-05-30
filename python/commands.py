@@ -1,27 +1,9 @@
-import itertools
 import time
 
 import vim
 from client import client  # Importing this will start the server
 from window import cursor_in_same_position, winrestview, winsaveview
-
-
-def display_results(motions):
-    output = ""
-    for motion, group in itertools.groupby(motions):
-        repetitions = len(list(group))
-        # Add a count only if there is more than 1 repetition
-        # Builds a string like "2k", "15w"
-        motion_str = (str(repetitions) if repetitions > 1 else "") + motion.motion
-
-        # Pad all motions to 5 characters wide so the descriptions are aligned
-        padding = " " * (5 - len(motion_str))
-        output += motion_str + padding + motion.description(repetitions) + "\n"
-
-    # Printing multiple lines doesn't make a hit-enter prompt appear so we
-    # pass the string to the echo command instead
-    # replace(', \') escapes ' characters
-    vim.command("echo \"" + output.replace("'", "\\'") + '"')
+from output import output
 
 
 class RecordedState:
@@ -62,7 +44,7 @@ def run():
 
     if not cursor_in_same_position(start_state.view, current_state.view):
         # Start pathfinding in the background and call display_results when done
-        client.pathfind(start_state.view, current_state.view, display_results)
+        client.pathfind(start_state.view, current_state.view, output)
 
     reset()
 
