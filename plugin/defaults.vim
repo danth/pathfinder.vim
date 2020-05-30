@@ -1,3 +1,7 @@
+if !exists('g:pf_autorun_delay')
+  let g:pf_autorun_delay = 2
+endif
+
 if !exists('g:pf_motions')
   let g:pf_motions = [
     \ {'motion': 'h', 'weight': 1, 'description': 'Left {count} columns'},

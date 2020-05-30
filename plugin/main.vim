@@ -24,25 +24,29 @@ if exists('g:pf_server_communiation_file')
   " Importing this will run the server and connect back to the client
   python3 import server
 else
-  " Importing this will spawn a new, barebones Vim process to act as the
-  " server, and do other setup steps
-  python3 from client import client
+  python3 import commands
 
-  function! PollResponses(timer)
-    python3 client.poll_responses()
+  " Set up a timer to call the loop function peroidically
+  function! PathfinderLoop(timer)
+    python3 commands.loop()
   endfunction
-  let s:timer = timer_start(100, 'PollResponses', {'repeat': -1})
-
-  augroup CloseServerOnQuit
+  augroup PathfinderStartOnEnter
     autocmd!
-    autocmd VimLeave * call timer_stop(s:timer)
-    autocmd VimLeave * python3 client.close()
+    autocmd VimEnter * let s:timer = timer_start(100, 'PathfinderLoop', {'repeat': -1})
   augroup END
 
-  " Bind commands to Python functions
-  python3 from commands import pathfinder_begin, pathfinder_run
-  command! PathfinderBegin python3 pathfinder_begin()
-  command! PathfinderRun python3 pathfinder_run()
+  " Stop the loop and call the stop function on VimLeave
+  augroup PathfinderStopOnLeave
+    autocmd!
+    autocmd VimLeave * call timer_stop(s:timer)
+    autocmd VimLeave * python3 commands.stop()
+  augroup END
+
+  " Bind events to Python functions
+  augroup PathfinderEventBindings
+    autocmd!
+    autocmd WinEnter,TabEnter,BufNewFile,BufReadPre,SessionLoadPost * python3 commands.reset()
+  augroup END
 endif
 
 
