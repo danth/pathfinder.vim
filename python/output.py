@@ -34,9 +34,9 @@ def explained_motions(motions):
 
 def output(motions):
     if vim.eval("has('popupwin')"):
+        output = list(explained_motions(motions))
         vim.Function('popup_create')(
-            # popup_create requires multiple lines to be as a list
-            list(explained_motions(motions)),
+            output,
             {
                 # 4 lines up from the bottom of the screen
                 "line": vim.options["lines"] - 4,
@@ -45,7 +45,7 @@ def output(motions):
                 "pos": "botleft",
                 "wrap": False,
                 "padding": (0,1,0,1),
-                "time": 3000
+                "time": 3000 + (500 * len(output))
             }
         )
     else:
