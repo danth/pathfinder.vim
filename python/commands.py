@@ -59,17 +59,21 @@ def loop():
     new_state = RecordedState()
 
     if (
+        current_state.mode in ['n', 'v', 'V'] and
         time.time() >= current_state.time + vim.vars["pf_autorun_delay"]
         # This is checked in run(), but that would reset the timer if we called it
         and not cursor_in_same_position(start_state.view, current_state.view)
     ):
         # No motions for the configured timeout
         run()
-    elif start_state.mode in ['n', 'v', 'V'] and start_state.mode != new_state.mode:
-        # Changed modes, leaving one of normal, visual or visual-line
-        # (we don't want to trigger for leaving e.g. insert mode since cursor
-        # movements there are not made with motions)
-        run()
+    elif start_state.mode != new_state.mode:
+        if start_state.mode in ['n', 'v', 'V']:
+            # Changed modes, leaving one of normal, visual or visual-line
+            # (we don't want to trigger for leaving e.g. insert mode since cursor
+            # movements there are not made with motions)
+            run()
+        else:
+            reset()
     elif (
         new_state.mode == 'n' and
         new_state.buffer_contents != start_state.buffer_contents
