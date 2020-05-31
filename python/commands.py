@@ -56,6 +56,7 @@ def update_current():
     global current_state
     current_state = RecordedState()
 
+
 def autorun():
     """Called on a timer several times per second, if autorun is enabled."""
     global start_state, current_state
