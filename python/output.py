@@ -15,12 +15,10 @@ def compact_motions(motions):
 
     e.g. 2* 5j $
     """
-    return " ".join(
-        [
-            count(motion, len(list(group)))
-            for motion, group in itertools.groupby(motions)
-        ]
-    )
+    return " ".join([
+        count(motion, len(list(group)))
+        for motion, group in itertools.groupby(motions)
+    ])
 
 
 def explained_motions(motions):
