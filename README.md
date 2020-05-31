@@ -35,8 +35,9 @@ Plug 'AlphaMycelium/pathfinder.vim'
 1. Move the cursor in normal, visual or visual-line mode.
 2. That's it.
 
-Note that long-distance movements can take a while to process, especially on
-low-end machines.
+Note that long-distance movements can take a while to calculate, especially on
+low-end machines. If another movement is made, the pathfinding will be
+cancelled to start processing the new path instead.
 
 If your Vim has `+popupwin` (available since 8.2), you will see a popup at the
 bottom of the screen containing the suggestion for the last movement you made,

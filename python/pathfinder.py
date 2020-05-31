@@ -43,15 +43,21 @@ class Path:
             # Maintain heap invariant after this change
             heapq.heapify(self.open_nodes)
 
-    def find_path(self):
-        """Use Dijkstra's algorithm to find the optimal sequence of motions."""
+    def find_path(self, client_connection):
+        """
+        Use Dijkstra's algorithm to find the optimal sequence of motions.
+
+        :param client_connection: If another pathfinding request is waiting on this
+            connection, exit (returning None) as soon as possible. This cancels the
+            pathfinding, moving on to the new request immediately.
+        """
         # Dictionary of all nodes (both open and closed) indexed by the line and column
         self.nodes = {}
         # Priority queue of open nodes to efficiently find the node with the lowest g
         # (using heapq module)
         self.open_nodes = [StartNode(self.from_view)]
 
-        while len(self.open_nodes) > 0:
+        while len(self.open_nodes) > 0 and not client_connection.poll():
             current_node = heapq.heappop(self.open_nodes)
             current_node.closed = True
 
@@ -73,5 +79,3 @@ class Path:
                     # Add a new node
                     self.nodes[child_node.key()] = child_node
                     heapq.heappush(self.open_nodes, child_node)
-
-        raise Exception("No path found")

@@ -46,57 +46,43 @@ class Server:
         :raises EOFError: when the connection is closed.
         """
         while True:
-            # Wait for instructions (sent in a tuple of action, data)
-            action, data = self.client_connection.recv()
-
             try:
-                self.do_action(action, data)
+                data = self.client_connection.recv()
+
+                # If there is still data waiting, then multiple requests were sent,
+                # so we skip pathfinding and move on to the next one
+                if not self.client_connection.poll():
+                    self.do_action(data)
             except:
                 # Send any unexpected exceptions back to the client
                 # to be displayed for debugging purposes
                 self.client_connection.send(("ERROR", traceback.format_exc()))
 
-    def do_action(self, action, data):
-        """
-        Process an instruction received from the client.
+    def do_action(self, data):
+        """Process an instruction from the client."""
+        self.start_view = data["start"]
+        self.target_view = data["target"]
+        vim.current.buffer[:] = data["buffer"]
+        vim.vars["pf_motions"] = data["motions"]
+        vim.options["scrolloff"] = data["scrolloff"]
 
-        This will be one of:
-        - ``START`` - Set the start view.
-        - ``TARGET`` - Set the target view.
-        - ``SIZE`` - Set the window dimensions. This is measured in main Vim using
-          winwidth(0) and winheight(0), but restored using &lines and &columns so we
-          don't need to create additional windows to get the right size.
-        - ``BUFFER`` - Transfer the contents of the current buffer.
-        - ``MOTIONS`` - Transfer the value of g:pf_motions.
-        - ``SCROLLOFF`` - Transfer the value of &scrolloff (important for H,M,L).
-        - ``RUN`` - After all the steps above have happened (in any order), do the
-          actual pathfinding and send back a result.
-        """
-        if action == "START":
-            self.start_view = data
-        elif action == "TARGET":
-            self.target_view = data
-        elif action == "SIZE":
-            # Set size of the entire Vim display to match the size of the
-            # corresponding window in the client
-            vim.options["lines"] = vim.options["cmdheight"] + int(data[0])
-            vim.options["columns"] = int(data[1])
-        elif action == "BUFFER":
-            vim.current.buffer[:] = data
-        elif action == "MOTIONS":
-            vim.vars["pf_motions"] = data
-        elif action == "SCROLLOFF":
-            vim.options["scrolloff"] = data
-        elif action == "RUN":
-            self.pathfind()
-        else:
-            raise Exception(f"Received an unexpected action " + action)
+        # Set size of the entire Vim display to match the size of the
+        # corresponding window in the client
+        vim.options["lines"] = vim.options["cmdheight"] + int(data["size"][0])
+        vim.options["columns"] = int(data["size"][1])
+
+        self.pathfind()
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
         path = Path(self.start_view, self.target_view)
-        motions = path.find_path()
-        self.client_connection.send(("RESULT", motions))
+        motions = path.find_path(self.client_connection)
+
+        # If motions is None, that means we cancelled pathfinding because a new
+        # request was received. We also check for another request now in case one was
+        # sent during the last iteration of the pathfinding loop.
+        if not (motions is None or self.client_connection.poll()):
+            self.client_connection.send(("RESULT", motions))
 
 
 server = Server(vim.vars["pf_server_communiation_file"])

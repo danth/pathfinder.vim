@@ -21,11 +21,6 @@ class Client:
     def __init__(self):
         self.open()
 
-        # There is no chance of simultaneous pathfinding requests completing in the
-        # wrong order, because the server only processes one at a time. Hence we can
-        # just use a list to queue up the callback functions.
-        self.callback_queue = list()
-
     def open(self):
         """Launch and connect to the server Vim."""
         # Create a file used to communicate with the server
@@ -88,7 +83,8 @@ class Client:
         """
         if response_type == "RESULT":
             # Get the first callback function and pass the result to it
-            self.callback_queue.pop()(data)
+            self.callback(data)
+            del self.callback
         elif response_type == "ERROR":
             print(
                 "Pathfinding server encountered an unexpected exception:",
@@ -107,26 +103,23 @@ class Client:
         :param callback: Function to be called once a path is found. Recieves a list
             of motions as a parameter.
         """
-        self.callback_queue.append(callback)
-
-        self.server_connection.send(("START", start_view))
-        self.server_connection.send(("TARGET", target_view))
-        self.server_connection.send(("MOTIONS", vim.eval("g:pf_motions")))
-        self.server_connection.send(("SCROLLOFF", vim.options["scrolloff"]))
-
-        # WindowTextWidth() - see plugin/dimensions.vim
-        window_size = (vim.eval("WindowTextWidth()"), vim.eval("winheight(0)"))
-        self.server_connection.send(("SIZE", window_size))
-
-        # We don't need to join these lines together with \n, because they need
-        # to be used in list form by the server
-        buffer_contents = vim.eval("getline(0,'$')")
-        self.server_connection.send(("BUFFER", buffer_contents))
-
-        # TODO: Send value of g:pf_motions
-
-        # Ask the server to start pathfinding
-        self.server_connection.send(("RUN", None))
+        self.callback = callback
+        self.server_connection.send({
+            "start": start_view,
+            "target": target_view,
+            # Using vim.vars would return a vim.list object which we cannot send
+            # because it can't be pickled
+            "motions": vim.eval("g:pf_motions"),
+            "scrolloff": vim.options["scrolloff"],
+            "size": (
+                # WindowTextWidth() - see plugin/dimensions.vim
+                vim.eval("WindowTextWidth()"),
+                vim.eval("winheight(0)")
+            ),
+            # We don't need to join these lines together, the server expects
+            # (and needs) them in list form
+            "buffer": vim.eval("getline(0,'$')")
+        })
 
 
 client = Client()
