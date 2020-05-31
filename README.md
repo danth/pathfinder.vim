@@ -45,6 +45,15 @@ along with a short description of what each motion does.
 
 If not, the suggestion will be `echo`ed, in a single line without descriptions.
 
+### Manual Commands
+
+If you set `g:pf_autorun_delay` (see below) to any negative value, autorun will
+be disabled and instead you get two commands:
+
+- `:PathfinderBegin`: Set the start position. This also happens automatically
+  when switching windows/tabs, or loading a new file.
+- `:PathfinderRun`: Set the target position and run the pathfinder.
+
 ## Configuration
 
 *pathfinder.vim works out-of-the box with the default configuration. You don't
@@ -52,10 +61,14 @@ need to read this section if you don't want to.*
 
 ### General settings
 
-| Variable | Function |
-| --- | --- |
-| `g:pf_autorun_delay` | Time in seconds where no keypresses occur before starting pathfinding. Note that it also starts on other events such as entering insert mode.<br>*Default: 2* |
-| `g:pf_server_communication_file` | Internal variable set automatically when launching the server Vim. **Do not set this manually, it will break everything.** |
+#### `g:pf_autorun_delay`
+Time in seconds where no keypresses occur before starting pathfinding. Note
+that it also starts on other events such as entering insert mode. Set to a
+negative value to use manual commands. *Default: 2*
+
+#### `g:pf_server_communication_file`
+Internal variable set automatically when launching the server Vim.
+**Do not set this manually, it will break everything.**
 
 ### Motions
 

@@ -26,9 +26,19 @@ if exists('g:pf_server_communiation_file')
 else
   python3 import commands
 
+  " Manual commands to be used when autorun is disabled
+  command! PathfinderBegin python3 commands.reset()
+  command! PathfinderRun python3 commands.update_current(); commands.run()
+
   " Set up a timer to call the loop function peroidically
   function! PathfinderLoop(timer)
-    python3 commands.loop()
+    " Check for responses from the server
+    python3 commands.client.poll_responses()
+
+    if g:pf_autorun_delay > 0
+      " Only autorun if user has enabled it
+      python3 commands.autorun()
+    endif
   endfunction
   augroup PathfinderStartOnEnter
     autocmd!
@@ -38,7 +48,7 @@ else
   " Stop the loop and call the stop function on VimLeave
   augroup PathfinderStopOnLeave
     autocmd!
-    autocmd VimLeave * call timer_stop(s:timer)
+    autocmd VimLeave * if exists('s:timer') | call timer_stop(s:timer) | endif
     autocmd VimLeave * python3 commands.stop()
   augroup END
 

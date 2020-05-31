@@ -51,12 +51,13 @@ def run():
     reset()
 
 
-def loop():
-    """Called on a timer several times per second."""
-    # If the server is disconnected: Attempt to connect
-    # If the server is connected: Process responses
-    client.poll_responses()
+def update_current():
+    """Called before run() when using manual commands."""
+    global current_state
+    current_state = RecordedState()
 
+def autorun():
+    """Called on a timer several times per second, if autorun is enabled."""
     global start_state, current_state
     new_state = RecordedState()
 
