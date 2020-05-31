@@ -1,9 +1,9 @@
 import heapq
 
 import vim
+from motion import Motion
 from node import Node, StartNode
 from window import cursor_in_same_position
-from motion import Motion
 
 
 class Path:
@@ -42,7 +42,6 @@ class Path:
             preexisting_node.__dict__.update(node.__dict__)
             # Maintain heap invariant after this change
             heapq.heapify(self.open_nodes)
-
 
     def find_path(self):
         """Use Dijkstra's algorithm to find the optimal sequence of motions."""

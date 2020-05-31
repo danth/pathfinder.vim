@@ -1,4 +1,5 @@
 import itertools
+
 import vim
 
 
@@ -14,10 +15,13 @@ def compact_motions(motions):
 
     e.g. 2* 5j $
     """
-    return " ".join([
-        count(motion, len(list(group)))
-        for motion, group in itertools.groupby(motions)
-    ])
+    return " ".join(
+        [
+            count(motion, len(list(group)))
+            for motion, group in itertools.groupby(motions)
+        ]
+    )
+
 
 def explained_motions(motions):
     """
@@ -35,7 +39,7 @@ def explained_motions(motions):
 def output(motions):
     if vim.eval("has('popupwin')"):
         output = list(explained_motions(motions))
-        vim.Function('popup_create')(
+        vim.Function("popup_create")(
             output,
             {
                 # 4 lines up from the bottom of the screen
@@ -44,10 +48,9 @@ def output(motions):
                 # Make the "line" option relative to the bottom edge
                 "pos": "botleft",
                 "wrap": False,
-                "padding": (0,1,0,1),
-                "time": 3000 + (500 * len(output))
-            }
+                "padding": (0, 1, 0, 1),
+                "time": 3000 + (500 * len(output)),
+            },
         )
     else:
         print(compact_motions(motions))
-

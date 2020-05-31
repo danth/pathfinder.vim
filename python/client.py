@@ -1,8 +1,9 @@
 import os
-import tempfile
-import vim
 import subprocess
+import tempfile
 from multiprocessing import connection
+
+import vim
 
 
 class Client:
@@ -33,16 +34,20 @@ class Client:
         )
 
         # serverrc.vim in the root of the repo
-        vimrc_path = os.path.normpath(os.path.join(
-            os.path.dirname(__file__), "..", "serverrc.vim"))
+        vimrc_path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
+        )
         # Launch the server as described above
         self.server_process = subprocess.Popen(
             (
-                "vim", "--not-a-term",
-                "--cmd", f"let g:pf_server_communiation_file='{self.file_path}'",
-                "-u", vimrc_path
+                "vim",
+                "--not-a-term",
+                "--cmd",
+                f"let g:pf_server_communiation_file='{self.file_path}'",
+                "-u",
+                vimrc_path,
             ),
-            stdout=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
         )
 
         # poll_responses will see this is None and look for the ability to connect
@@ -87,7 +92,8 @@ class Client:
         elif response_type == "ERROR":
             print(
                 "Pathfinding server encountered an unexpected exception:",
-                data, sep="\n"
+                data,
+                sep="\n",
             )
         else:
             raise Exception("Received an unexpected response " + response_type)

@@ -1,7 +1,7 @@
 import traceback
-import vim
 from multiprocessing import connection
 
+import vim
 from pathfinder import Path
 
 
