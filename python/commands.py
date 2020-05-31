@@ -1,6 +1,7 @@
 import time
 
 import vim
+
 from client import client  # Importing this will start the server
 from output import output
 from window import cursor_in_same_position, winrestview, winsaveview

@@ -1,4 +1,5 @@
 import vim
+
 from window import cursor_in_same_position, winrestview, winsaveview
 
 

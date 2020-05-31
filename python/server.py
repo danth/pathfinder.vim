@@ -2,6 +2,7 @@ import traceback
 from multiprocessing import connection
 
 import vim
+
 from pathfinder import Path
 
 
