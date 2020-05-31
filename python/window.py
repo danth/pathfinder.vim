@@ -2,13 +2,12 @@ import vim
 
 
 def winsaveview():
-    return vim.bindeval("winsaveview()")
+    return vim.eval("winsaveview()")
 
 
 def winrestview(view):
-    vim.current.window.vars["view_to_restore"] = view
-    vim.eval("winrestview(w:view_to_restore)")
-    del vim.current.window.vars["view_to_restore"]
+    f = vim.Function("winrestview")
+    f(view)
 
 
 def cursor_in_same_position(a, b):

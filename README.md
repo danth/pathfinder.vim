@@ -2,18 +2,18 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/maintainability)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/maintainability)
 
-An experimental Vim plugin based on [this Reddit post][reddit].
+A Vim plugin to give suggestions to improve your movements, by using Dijkstra's
+pathfinding algorithm on cursor motions. It's a bit like [Clippy][office-assistant].
 
-Taking a cursor start position and an end position, it uses Dijkstra's
-algorithm to find the most optimal combination of motions to move between
-them. This can be used to discover new ways of doing things, which is
-especially helpful for beginners who are not familiar with the options
-available.
+Every time you make a movement, a suggested optimal route appears - and if
+you're using Vim 8.2 or above (`+popupwin`), you also get a short description
+of what each motion does. To allow you to keep typing while it works, paths are
+generated in a separate process, which runs Vim with a [barebones vimrc](serverrc.vim).
 
 There is also a possibility of extending the script in the future to work with
 other types of edits, such as operators, macros, marks and so on.
 
-[reddit]: https://www.reddit.com/r/vim/comments/gpam7f/plugin_to_suggest_how_to_be_more_efficient/frm01tx?utm_source=share&utm_medium=web2x
+[office-assistant]: https://en.wikipedia.org/wiki/Office_Assistant
 
 ## Installation
 
@@ -24,44 +24,55 @@ Use your favorite plugin manager. I recommend
 Plug 'AlphaMycelium/pathfinder.vim'
 ```
 
-pathfinder.vim requires Vim to be compiled with the `+python3` feature.
+### Requirements
 
-```vim
-:echo has('python3')
-```
+- `+python3`
+- `+timers`
+- `+popupwin` if you want to see help summaries next to the suggested motions
 
 ## Usage
 
-1. Place your cursor on a starting position.
-2. Run `:PathfinderBegin`.
-3. Move the cursor to another position (within the same buffer).
-4. Use `:PathfinderRun` to see the most optimal set of movements you should
-   have used in step 3.
+1. Move the cursor in normal, visual or visual-line mode.
+2. That's it.
 
-Note that long-distance movements can take a while to process.
+Note that long-distance movements can take a while to process, especially on
+low-end machines.
 
-Your cursor will return to the starting position, which gives you a chance to
-practice the optimal motion. Learn by usage!
+If your Vim has `+popupwin` (available since 8.2), you will see a popup at the
+bottom of the screen containing the suggestion for the last movement you made,
+along with a short description of what each motion does.
+
+If not, the suggestion will be `echo`ed, in a single line without descriptions.
 
 ## Configuration
 
 *pathfinder.vim works out-of-the box with the default configuration. You don't
 need to read this section if you don't want to.*
 
+### General settings
+
+| Variable | Function |
+| --- | --- |
+| `g:pf_autorun_delay` | Time in seconds where no keypresses occur before starting pathfinding. Note that it also starts on other events such as entering insert mode.<br>*Default: 2* |
+| `g:pf_server_communication_file` | Internal variable set automatically when launching the server Vim. **Do not set this manually, it will break everything.** |
+
+### Motions
+
 The plugin uses a global variable to set the available motions:
 
 ```vim
 let g:pf_motions = [
-  \ {'motion': 'h', 'weight': 1},
-  \ {'motion': 'l', 'weight': 1},
-  \ {'motion': 'j', 'weight': 1},
-  \ {'motion': 'k', 'weight': 1},
+  \ {'motion': 'h', 'weight': 1, 'description': 'Left {count} columns'},
+  \ {'motion': 'l', 'weight': 1, 'description': 'Right {count} columns'},
+  \ {'motion': 'j', 'weight': 1, 'description': 'Down {count} lines'},
+  \ {'motion': 'k', 'weight': 1, 'description': 'Up {count} lines'},
   \ ...
   \ ]
 ```
 
-This contains all the supported motions by default, so you only need to change
-it if you want to adjust the weighting or delete some of them.
+This contains all the supported motions by default. If you do decide to change
+it, you will need to copy the entire list out of [defaults.vim](plugin/defaults.vim)
+(there is no way to edit a single motion without doing that).
 
 Each motion has a weight associated with it. The higher the weight, the less
 the pathfinding algorithm wants to use that motion. The path with the lowest
@@ -80,11 +91,12 @@ the string length of the count. This is easier to explain with examples:
 | `9j` -> `10j` | 1, since `10j` is a character longer than `9j` |
 | `1j` -> `100j` | 2, since `100j` is 2 characters longer than `1j` |
 
-It is recommended that the only modifications you make to the list are:
+Changes you could make:
 
 - Increasing the weight of motions you don't like
 - Deleting motions you never want to use
 - Changing the order of motions to put the ones you prefer first
+- Changing descriptions to be more understandable for you
 
 ## Related Plugins
 
