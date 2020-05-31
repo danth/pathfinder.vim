@@ -10,7 +10,6 @@ class StartNode:
     :param view: The view representing the position this node is at, obtained from
         winsaveview().
     """
-
     def __init__(self, view):
         self.view = view
         self.g = 0
@@ -63,7 +62,6 @@ class Node(StartNode):
     :param parent: Parent node.
     :param motion: Initial motion to add to incoming_motions.
     """
-
     def __init__(self, view, parent, motion):
         self.view = view
         self.parent = parent
@@ -110,7 +108,8 @@ class Node(StartNode):
         # Build a 2d list where each item is the set of choices for that position in
         # the sequence
         # Since backtracking is, well, backwards, we flip it around using [::-1]
-        motion_options = [node.incoming_motions for node in self.backtrack()][::-1]
+        motion_options = [node.incoming_motions
+                          for node in self.backtrack()][::-1]
 
         def best_motion_from_triplet(left, centre, right):
             if len(centre) < 2:
@@ -122,7 +121,8 @@ class Node(StartNode):
 
             if len(left_and_centre) > 0 and len(centre_and_right) > 0:
                 # Look for motions we have in common with *both* sides
-                both_sides = set.intersection(left_and_centre, centre_and_right)
+                both_sides = set.intersection(left_and_centre,
+                                              centre_and_right)
                 if both_sides:
                     return both_sides.pop()
 
@@ -138,7 +138,8 @@ class Node(StartNode):
         motions = list()
         for i, centre in enumerate(motion_options):
             left = motion_options[i - 1] if i > 0 else []
-            right = motion_options[i + 1] if i < len(motion_options) - 1 else []
+            right = motion_options[i +
+                                   1] if i < len(motion_options) - 1 else []
             motions.append(best_motion_from_triplet(left, centre, right))
 
         return motions

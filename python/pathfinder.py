@@ -9,7 +9,6 @@ from window import cursor_in_same_position
 
 class Path:
     """A path between a cursor start point and end point."""
-
     def __init__(self, from_view, target_view):
         self.from_view = from_view
         self.target_view = target_view
@@ -75,7 +74,8 @@ class Path:
 
                 if child_node.key() in self.nodes:
                     preexisting_child_node = self.nodes[child_node.key()]
-                    self._update_preexisting_node(child_node, preexisting_child_node)
+                    self._update_preexisting_node(child_node,
+                                                  preexisting_child_node)
                 else:
                     # Add a new node
                     self.nodes[child_node.key()] = child_node
