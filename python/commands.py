@@ -3,7 +3,7 @@ import time
 import vim
 
 from client import client  # Importing this will start the server
-from output import output
+from output import show_output
 from window import cursor_in_same_position, winrestview, winsaveview
 
 
@@ -45,7 +45,7 @@ def run():
 
     if not cursor_in_same_position(start_state.view, current_state.view):
         # Start pathfinding in the background and call display_results when done
-        client.pathfind(start_state.view, current_state.view, output)
+        client.pathfind(start_state.view, current_state.view, show_output)
 
     reset()
 
