@@ -37,9 +37,9 @@ def explained_motions(motions):
 
 
 def show_output(motions):
-    if vim.eval("has('nvim')"):
+    if int(vim.eval("has('nvim')")):
         print(compact_motions(motions))
-    elif vim.eval("has('popupwin')"):
+    elif int(vim.eval("has('popupwin')")):
         output = list(explained_motions(motions))
         vim.Function("popup_create")(
             output,
