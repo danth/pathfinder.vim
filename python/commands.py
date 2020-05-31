@@ -14,6 +14,7 @@ class RecordedState:
     Used for comparing the start of a path to the current state to determine whether
     pathfinding should begin.
     """
+
     def __init__(self):
         self.time = time.time()
         self.view = winsaveview()
@@ -59,11 +60,12 @@ def loop():
     global start_state, current_state
     new_state = RecordedState()
 
-    if (current_state.mode in ["n", "v", "V"] and
-            time.time() >= current_state.time + vim.vars["pf_autorun_delay"]
-            # This is checked in run(), but that would reset the timer if we called it
-            and
-            not cursor_in_same_position(start_state.view, current_state.view)):
+    if (
+        current_state.mode in ["n", "v", "V"]
+        and time.time() >= current_state.time + vim.vars["pf_autorun_delay"]
+        # This is checked in run(), but that would reset the timer if we called it
+        and not cursor_in_same_position(start_state.view, current_state.view)
+    ):
         # No motions for the configured timeout
         run()
     elif start_state.mode != new_state.mode:
@@ -74,8 +76,10 @@ def loop():
             run()
         else:
             reset()
-    elif (new_state.mode == "n"
-          and new_state.buffer_contents != start_state.buffer_contents):
+    elif (
+        new_state.mode == "n"
+        and new_state.buffer_contents != start_state.buffer_contents
+    ):
         # Buffer has changed in normal mode
         # This means a command like x,rx,p must have been used
         run()

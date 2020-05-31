@@ -19,6 +19,7 @@ class Server:
     relaying the traceback message to the client beforehand so that it can be displayed
     for debugging.
     """
+
     def __init__(self, file_path):
         self.listener = connection.Listener(file_path.decode())
 

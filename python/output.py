@@ -1,4 +1,5 @@
 import itertools
+
 import vim
 
 
@@ -14,10 +15,12 @@ def compact_motions(motions):
 
     e.g. 2* 5j $
     """
-    return " ".join([
-        get_count(motion, len(list(group)))
-        for motion, group in itertools.groupby(motions)
-    ])
+    return " ".join(
+        [
+            get_count(motion, len(list(group)))
+            for motion, group in itertools.groupby(motions)
+        ]
+    )
 
 
 def explained_motions(motions):

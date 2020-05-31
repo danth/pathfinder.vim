@@ -17,18 +17,21 @@ class Client:
     A custom vimrc is used to only load this plugin, disabling other plugins and user
     settings.
     """
+
     def __init__(self):
         self.open()
 
     def open(self):
         """Launch and connect to the server Vim."""
         # Create a file used to communicate with the server
-        self.file_path = os.path.join(tempfile.gettempdir(),
-                                      "pathfinder_vim_" + vim.eval("getpid()"))
+        self.file_path = os.path.join(
+            tempfile.gettempdir(), "pathfinder_vim_" + vim.eval("getpid()")
+        )
 
         # serverrc.vim in the root of the repo
         vimrc_path = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), "..", "serverrc.vim"))
+            os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
+        )
         # Launch the server as described above
         self.server_process = subprocess.Popen(
             (
@@ -101,27 +104,24 @@ class Client:
             of motions as a parameter.
         """
         self.callback = callback
-        self.server_connection.send({
-            "start":
-            start_view,
-            "target":
-            target_view,
-            # Using vim.vars would return a vim.list object which we cannot send
-            # because it can't be pickled
-            "motions":
-            vim.eval("g:pf_motions"),
-            "scrolloff":
-            vim.options["scrolloff"],
-            "size": (
-                # WindowTextWidth() - see plugin/dimensions.vim
-                vim.eval("WindowTextWidth()"),
-                vim.eval("winheight(0)"),
-            ),
-            # We don't need to join these lines together, the server expects
-            # (and needs) them in list form
-            "buffer":
-            vim.eval("getline(0,'$')"),
-        })
+        self.server_connection.send(
+            {
+                "start": start_view,
+                "target": target_view,
+                # Using vim.vars would return a vim.list object which we cannot send
+                # because it can't be pickled
+                "motions": vim.eval("g:pf_motions"),
+                "scrolloff": vim.options["scrolloff"],
+                "size": (
+                    # WindowTextWidth() - see plugin/dimensions.vim
+                    vim.eval("WindowTextWidth()"),
+                    vim.eval("winheight(0)"),
+                ),
+                # We don't need to join these lines together, the server expects
+                # (and needs) them in list form
+                "buffer": vim.eval("getline(0,'$')"),
+            }
+        )
 
 
 client = Client()
