@@ -69,8 +69,8 @@ class Server:
 
         # Set size of the entire Vim display to match the size of the
         # corresponding window in the client
-        vim.options["lines"] = vim.options["cmdheight"] + int(data["size"][0])
-        vim.options["columns"] = int(data["size"][1])
+        vim.options["columns"] = int(data["size"][0])
+        vim.options["lines"] = vim.options["cmdheight"] + int(data["size"][1])
 
         self.pathfind()
 
