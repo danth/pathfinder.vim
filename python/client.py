@@ -35,7 +35,8 @@ class Client:
         # Launch the server as described above
         if vim.vars.get("pf_dev_server_console"):
             self.server_process = subprocess.Popen(
-                vim.eval("g:pf_dev_server_console").split(" ") + [
+                vim.eval("g:pf_dev_server_console").split(" ")
+                + [
                     "vim",
                     "--cmd",
                     f"let g:pf_server_communiation_file='{self.file_path}'",
