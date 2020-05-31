@@ -33,17 +33,30 @@ class Client:
             os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
         )
         # Launch the server as described above
-        self.server_process = subprocess.Popen(
-            (
-                "vim",
-                "--not-a-term",
-                "--cmd",
-                f"let g:pf_server_communiation_file='{self.file_path}'",
-                "-u",
-                vimrc_path,
-            ),
-            stdout=subprocess.DEVNULL,
-        )
+        if vim.vars.get("pf_dev_server_console"):
+            self.server_process = subprocess.Popen(
+                vim.eval("g:pf_dev_server_console").split(" ") + [
+                    "vim",
+                    "--cmd",
+                    f"let g:pf_server_communiation_file='{self.file_path}'",
+                    "--cmd",
+                    "let g:pf_dev_server_console=1",
+                    "-u",
+                    vimrc_path,
+                ],
+            )
+        else:
+            self.server_process = subprocess.Popen(
+                (
+                    "vim",
+                    "--not-a-term",
+                    "--cmd",
+                    f"let g:pf_server_communiation_file='{self.file_path}'",
+                    "-u",
+                    vimrc_path,
+                ),
+                stdout=subprocess.DEVNULL,
+            )
 
         # poll_responses will see this is None and look for the ability to connect
         # instead of received messages
