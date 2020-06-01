@@ -5,4 +5,4 @@ class Motion:
         self.description_template = input_dict["description"].decode()
 
     def description(self, count):
-        return self.description_template.format(count=count)
+        return self.description_template.replace("{count}", str(count))
