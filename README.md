@@ -5,6 +5,8 @@
 A Vim plugin to give suggestions to improve your movements, by using Dijkstra's
 pathfinding algorithm on cursor motions. It's a bit like [Clippy][office-assistant].
 
+![Demo GIF](images/movements-v1.2.2.gif)
+
 Every time you make a movement, a suggested optimal route appears - and if
 you're using Vim 8.2 or above (`+popupwin`), you also get a short description
 of what each motion does. To allow you to keep typing while it works, paths are
