@@ -38,6 +38,23 @@ class StartNode:
             # The cursor has moved, return the newly created node
             return Node(new_view, self, motion)
 
+    def child_nodes(self, motions, min_line, max_line):
+        """
+        Generator which yields each found child node.
+
+        :param motions: List of motions to test.
+        :param min_line: Child nodes before this line number will not be ignored.
+        :param max_line: Child nodes after this line number will be ignored.
+        """
+        for motion in motions:
+            child_node = self.test_motion(motion)
+            if (
+                child_node is not None and
+                int(child_node.view["lnum"]) >= min_line and
+                int(child_node.view["lnum"]) <= max_line
+            ):
+                yield child_node
+
     def __eq__(self, other):
         return self.g == other.g
 

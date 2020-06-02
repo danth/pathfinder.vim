@@ -44,13 +44,15 @@ class Path:
             # Maintain heap invariant after this change
             heapq.heapify(self.open_nodes)
 
-    def find_path(self, client_connection):
+    def find_path(self, client_connection, min_line, max_line):
         """
         Use Dijkstra's algorithm to find the optimal sequence of motions.
 
         :param client_connection: If another pathfinding request is waiting on this
             connection, exit (returning None) as soon as possible. This cancels the
             pathfinding, moving on to the new request immediately.
+        :param min_line: Do not explore above this line number.
+        :param max_line: Do not explore below this line number.
         """
         # Dictionary of all nodes (both open and closed) indexed by the line and column
         self.nodes = {}
@@ -67,12 +69,9 @@ class Path:
                 return current_node.get_refined_path()
 
             # Loop through child nodes of the current node
-            # This is done by looping through the configured motions and testing each one
-            for motion in self.available_motions:
-                child_node = current_node.test_motion(motion)
-                if child_node is None:
-                    continue
-
+            for child_node in current_node.child_nodes(
+                self.available_motions, min_line, max_line
+            ):
                 if child_node.key() in self.nodes:
                     preexisting_child_node = self.nodes[child_node.key()]
                     self._update_preexisting_node(child_node, preexisting_child_node)

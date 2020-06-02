@@ -1,5 +1,6 @@
 import traceback
 from multiprocessing import connection
+from math import floor
 
 import vim
 
@@ -78,8 +79,23 @@ class Server:
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
+        min_line = min(int(self.start_view["lnum"]), int(self.target_view["lnum"]))
+        max_line = max(int(self.start_view["lnum"]), int(self.target_view["lnum"]))
+        # Number of lines between (and including) the start and target positions
+        search_area_lines = max_line - min_line
+        # Number of lines to explore above and below the start and target
+        # Limited to a maximum of 10 either side, but scaled based on the size of the
+        # search area - therefore small movements will explore less, and a start and
+        # target on the same line will only move within that line.
+        # TODO: Make these values configurable
+        explore_lines = min(10, floor(search_area_lines * 0.5))
+
         path = Path(self.start_view, self.target_view)
-        motions = path.find_path(self.client_connection)
+        motions = path.find_path(
+            self.client_connection,
+            max(1, min_line - explore_lines),
+            min(len(vim.current.buffer), max_line + explore_lines)
+        )
 
         # If motions is None, that means we cancelled pathfinding because a new
         # request was received. We also check for another request now in case one was
