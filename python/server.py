@@ -1,5 +1,4 @@
 import traceback
-from math import floor
 from multiprocessing import connection
 
 import vim
