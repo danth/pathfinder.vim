@@ -41,6 +41,5 @@ def get_line_limits(start_view, target_view):
 
     return (
         max(1, min_line - explore_lines),
-        min(len(vim.current.buffer), max_line + explore_lines)
+        min(len(vim.current.buffer), max_line + explore_lines),
     )
-

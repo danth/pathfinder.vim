@@ -49,9 +49,9 @@ class StartNode:
         for motion in motions:
             child_node = self.test_motion(motion)
             if (
-                child_node is not None and
-                int(child_node.view["lnum"]) >= min_line and
-                int(child_node.view["lnum"]) <= max_line
+                child_node is not None
+                and int(child_node.view["lnum"]) >= min_line
+                and int(child_node.view["lnum"]) <= max_line
             ):
                 yield child_node
 
