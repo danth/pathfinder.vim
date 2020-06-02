@@ -5,6 +5,8 @@ from multiprocessing import connection
 
 import vim
 
+from explore_lines import get_line_limits
+
 
 class Client:
     """
@@ -118,10 +120,14 @@ class Client:
             of motions as a parameter.
         """
         self.callback = callback
+
+        min_line, max_line = get_line_limits(start_view, target_view)
         self.server_connection.send(
             {
                 "start": start_view,
                 "target": target_view,
+                "min_line": min_line,
+                "max_line": max_line,
                 # Using vim.vars would return a vim.list object which we cannot send
                 # because it can't be pickled
                 "motions": vim.eval("g:pf_motions"),

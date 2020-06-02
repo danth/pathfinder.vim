@@ -1,5 +1,6 @@
 import traceback
 from multiprocessing import connection
+from math import floor
 
 import vim
 
@@ -64,6 +65,9 @@ class Server:
         """Process an instruction from the client."""
         self.start_view = data["start"]
         self.target_view = data["target"]
+        self.min_line = data["min_line"]
+        self.max_line = data["max_line"]
+
         vim.current.buffer[:] = data["buffer"]
         vim.vars["pf_motions"] = data["motions"]
         vim.options["scrolloff"] = data["scrolloff"]
@@ -79,7 +83,11 @@ class Server:
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
         path = Path(self.start_view, self.target_view)
-        motions = path.find_path(self.client_connection)
+        motions = path.find_path(
+            self.client_connection,
+            self.min_line,
+            self.max_line,
+        )
 
         # If motions is None, that means we cancelled pathfinding because a new
         # request was received. We also check for another request now in case one was
