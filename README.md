@@ -66,6 +66,26 @@ Time in seconds where no keypresses occur before starting pathfinding. Note
 that it also starts on other events such as entering insert mode. Set to a
 negative value to use manual commands. *Default: 2*
 
+#### `g:pf_explore_scale`
+Multiplier which determines how many lines the plugin is allowed to explore
+above and below the area between the start and target positions. (The result
+is rounded down.) *Default: 0.5*
+
+This improves performance significantly by preventing the pathfinding algorithm
+from searching in the wrong direction, but some shorter paths may be missed.
+These are mainly suggestions which would not be easy to notice without help
+from a machine, however, so are not as important for training purposes.
+
+Settings below 1 also mean that movements within a line will only use motions
+inside that line.
+
+If you have a powerful computer, you can disable this by setting it to a
+negative value, or increase it to a high value allow exploring more of the file.
+
+#### `g:pf_max_explore`
+Cap the number of surrounding lines explored (see above) to a maximum value.
+As usual, this can be disabled by making it negative. *Default: 10*
+
 #### `g:pf_server_communication_file`
 Internal variable set automatically when launching the server Vim.
 **Do not set this manually, it will break everything.**
