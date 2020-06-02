@@ -9,6 +9,12 @@ if !exists('g:pf_max_explore')
   let g:pf_max_explore = 10
 endif
 
+if !hlexists('PathfinderPopup')
+  highlight PathfinderPopup
+    \ ctermfg=Black ctermbg=DarkGray
+    \ guifg=Black guibg=DarkGray
+endif
+
 if !exists('g:pf_motions')
   let g:pf_motions = [
     \ {'motion': 'h', 'weight': 1, 'description': 'Left {count} columns'},

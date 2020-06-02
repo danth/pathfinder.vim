@@ -88,6 +88,9 @@ negative value, or increase it to a high value allow exploring more of the file.
 Cap the number of surrounding lines explored (see above) to a maximum value.
 As usual, this can be disabled by making it negative. *Default: 10*
 
+#### `PathfinderPopup`
+This highlight group sets the style of the popup window used for suggestions.
+
 #### `g:pf_server_communication_file`
 Internal variable set automatically when launching the server Vim.
 **Do not set this manually, it will break everything.**

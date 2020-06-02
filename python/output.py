@@ -51,6 +51,7 @@ def show_output(motions):
                 "pos": "botleft",
                 "wrap": False,
                 "padding": (0, 1, 0, 1),
+                "highlight": "PathfinderPopup",
                 "time": 3000 + (500 * len(output)),
             },
         )
