@@ -65,6 +65,9 @@ class Server:
         """Process an instruction from the client."""
         self.start_view = data["start"]
         self.target_view = data["target"]
+        self.explore_scale = float(data["explore_scale"])
+        self.max_explore = int(data["max_explore"])
+
         vim.current.buffer[:] = data["buffer"]
         vim.vars["pf_motions"] = data["motions"]
         vim.options["scrolloff"] = data["scrolloff"]
@@ -83,12 +86,19 @@ class Server:
         max_line = max(int(self.start_view["lnum"]), int(self.target_view["lnum"]))
         # Number of lines between (and including) the start and target positions
         search_area_lines = max_line - min_line
-        # Number of lines to explore above and below the start and target
-        # Limited to a maximum of 10 either side, but scaled based on the size of the
-        # search area - therefore small movements will explore less, and a start and
-        # target on the same line will only move within that line.
-        # TODO: Make these values configurable
-        explore_lines = min(10, floor(search_area_lines * 0.5))
+
+        if self.explore_scale >= 0:
+            # Number of lines to explore above and below the search area is scaled
+            # based on the length of the area
+            # This setting defaults to 0.5, if the search area was e.g. 6 lines then
+            # 3 more lines would be explored on either side
+            explore_lines = floor(search_area_lines * self.explore_scale)
+            if self.max_explore >= 0:
+                # Limit to no more than max_explore lines
+                explore_lines = min(self.max_explore, explore_lines)
+        else:
+            # This feature has been disabled, explore the entire file
+            explore_lines = len(vim.current.buffer)
 
         path = Path(self.start_view, self.target_view)
         motions = path.find_path(

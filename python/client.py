@@ -122,6 +122,8 @@ class Client:
             {
                 "start": start_view,
                 "target": target_view,
+                "explore_scale": vim.eval("g:pf_explore_scale"),
+                "max_explore": vim.eval("g:pf_max_explore"),
                 # Using vim.vars would return a vim.list object which we cannot send
                 # because it can't be pickled
                 "motions": vim.eval("g:pf_motions"),
