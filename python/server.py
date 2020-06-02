@@ -65,8 +65,8 @@ class Server:
         """Process an instruction from the client."""
         self.start_view = data["start"]
         self.target_view = data["target"]
-        self.explore_scale = float(data["explore_scale"])
-        self.max_explore = int(data["max_explore"])
+        self.min_line = data["min_line"]
+        self.max_line = data["max_line"]
 
         vim.current.buffer[:] = data["buffer"]
         vim.vars["pf_motions"] = data["motions"]
@@ -82,29 +82,11 @@ class Server:
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
-        min_line = min(int(self.start_view["lnum"]), int(self.target_view["lnum"]))
-        max_line = max(int(self.start_view["lnum"]), int(self.target_view["lnum"]))
-        # Number of lines between (and including) the start and target positions
-        search_area_lines = max_line - min_line
-
-        if self.explore_scale >= 0:
-            # Number of lines to explore above and below the search area is scaled
-            # based on the length of the area
-            # This setting defaults to 0.5, if the search area was e.g. 6 lines then
-            # 3 more lines would be explored on either side
-            explore_lines = floor(search_area_lines * self.explore_scale)
-            if self.max_explore >= 0:
-                # Limit to no more than max_explore lines
-                explore_lines = min(self.max_explore, explore_lines)
-        else:
-            # This feature has been disabled, explore the entire file
-            explore_lines = len(vim.current.buffer)
-
         path = Path(self.start_view, self.target_view)
         motions = path.find_path(
             self.client_connection,
-            max(1, min_line - explore_lines),
-            min(len(vim.current.buffer), max_line + explore_lines)
+            self.min_line,
+            self.max_line,
         )
 
         # If motions is None, that means we cancelled pathfinding because a new
