@@ -8,7 +8,7 @@ def get_explore_lines(search_area_lines):
     :returns: Number of lines to explore either side of the search area.
     """
     # Get setting values from Vim variables
-    explore_scale = int(vim.vars["pf_explore_scale"])
+    explore_scale = float(vim.vars["pf_explore_scale"])
     max_explore = int(vim.vars["pf_max_explore"])
 
     if explore_scale < 0:

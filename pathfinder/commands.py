@@ -2,9 +2,9 @@ import time
 
 import vim
 
-from client import client  # Importing this will start the server
-from output import show_output
-from window import cursor_in_same_position, winrestview, winsaveview
+from pathfinder.client import client  # Importing this will start the server
+from pathfinder.output import show_output
+from pathfinder.window import cursor_in_same_position, winrestview, winsaveview
 
 
 class RecordedState:

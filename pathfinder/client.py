@@ -5,7 +5,7 @@ from multiprocessing import connection
 
 import vim
 
-from explore_lines import get_line_limits
+from pathfinder.explore_lines import get_line_limits
 
 
 class Client:

@@ -1,6 +1,7 @@
 # pathfinder.vim
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/maintainability)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/test_coverage)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/test_coverage)
 
 A Vim plugin to give suggestions to improve your movements, by using Dijkstra's
 pathfinding algorithm on cursor motions. It's a bit like [Clippy][office-assistant].

@@ -3,7 +3,7 @@ from multiprocessing import connection
 
 import vim
 
-from pathfinder import Path
+from pathfinder.pathfinder import Path
 
 
 class Server:

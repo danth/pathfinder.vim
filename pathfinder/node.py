@@ -1,6 +1,6 @@
 import vim
 
-from window import cursor_in_same_position, winrestview, winsaveview
+from pathfinder.window import cursor_in_same_position, winrestview, winsaveview
 
 
 class StartNode:
