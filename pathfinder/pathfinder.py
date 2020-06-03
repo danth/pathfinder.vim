@@ -2,9 +2,9 @@ import heapq
 
 import vim
 
-from motion import Motion
-from node import Node, StartNode
-from window import cursor_in_same_position
+from pathfinder.motion import Motion
+from pathfinder.node import Node, StartNode
+from pathfinder.window import cursor_in_same_position
 
 
 class Path:

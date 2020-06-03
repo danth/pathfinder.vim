@@ -15,16 +15,16 @@ import sys
 from os.path import normpath, join
 
 plugin_root_dir = vim.eval("fnamemodify(resolve(expand('<sfile>:p')), ':h')")
-python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
+python_root_dir = normpath(join(plugin_root_dir, '..'))
 sys.path.insert(0, python_root_dir)
 endpython
 
 
 if exists('g:pf_server_communiation_file')
   " Importing this will run the server and connect back to the client
-  python3 import server
+  python3 import pathfinder.server
 else
-  python3 import commands
+  python3 import pathfinder.commands as commands
 
   " Manual commands to be used when autorun is disabled
   command! PathfinderBegin python3 commands.reset()
