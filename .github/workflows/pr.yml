@@ -26,6 +26,6 @@ jobs:
         CC_TEST_REPORTER_ID: 2a15e754c01e881bb38b15428a09d87eab35df4f8e6bcefa6d7f9e360b77b540
       with:
         coverageCommand: |
-          pytest -v --doctest-modules --cov=pathfinder --cov-report=xml
+          pytest -v --cov=pathfinder --cov-report=xml
         coverageLocations: 'coverage.xml:coverage.py'
 
