@@ -39,7 +39,7 @@ class Client:
             self.server_process = subprocess.Popen(
                 vim.eval("g:pf_dev_server_console").split(" ")
                 + [
-                    "vim",
+                    vim.eval("v:progname"),
                     "--cmd",
                     f"let g:pf_server_communiation_file='{self.file_path}'",
                     "--cmd",
@@ -51,7 +51,7 @@ class Client:
         else:
             self.server_process = subprocess.Popen(
                 (
-                    "vim",
+                    vim.eval("v:progname"),
                     "--not-a-term",
                     "--cmd",
                     f"let g:pf_server_communiation_file='{self.file_path}'",
