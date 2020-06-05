@@ -73,7 +73,6 @@ class Client:
             # Disable warnings about not being a terminal
             vim_cmd.append("--not-a-term")
 
-
         return vim_cmd + [
             "--cmd",
             f"let g:pf_server_communiation_file='{self.file_path}'",
