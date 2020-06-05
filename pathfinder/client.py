@@ -84,7 +84,7 @@ class Client:
                 if return_code is not None:
                     # Server did not connect because of an error
                     raise Exception(
-                        "Pathfinding server process exited with return code {return_code}"
+                        f"Pathfinding server process exited with return code {return_code}"
                     )
                 # else: just waiting for server to launch
 
