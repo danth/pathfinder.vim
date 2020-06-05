@@ -83,7 +83,9 @@ class Client:
                 return_code = self.server_process.poll()
                 if return_code is not None:
                     # Server did not connect because of an error
-                    raise Exception("Pathfinding server process exited with return code {return_code}")
+                    raise Exception(
+                        "Pathfinding server process exited with return code {return_code}"
+                    )
                 # else: just waiting for server to launch
 
         # Check if a request is waiting to be sent
