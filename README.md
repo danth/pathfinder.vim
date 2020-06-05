@@ -29,9 +29,14 @@ Plug 'AlphaMycelium/pathfinder.vim'
 
 ### Requirements
 
+Your Vim should have at least the following (see `:version`):
+
 - `+python3`
 - `+timers`
-- `+popupwin` if you want to see help summaries next to the suggested motions
+
+And if you want extra features:
+
+- `+popupwin` - better output format, and see help summaries next to the suggested motions
 
 ## Usage
 
