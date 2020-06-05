@@ -34,35 +34,52 @@ class Client:
         vimrc_path = os.path.normpath(
             os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
         )
-        # Launch the server as described above
-        if vim.vars.get("pf_dev_server_console"):
-            self.server_process = subprocess.Popen(
-                vim.eval("g:pf_dev_server_console").split(" ")
-                + [
-                    vim.eval("v:progname"),
-                    "--cmd",
-                    f"let g:pf_server_communiation_file='{self.file_path}'",
-                    "--cmd",
-                    "let g:pf_dev_server_console=1",
-                    "-u",
-                    vimrc_path,
-                ],
-            )
-        else:
-            self.server_process = subprocess.Popen(
-                (
-                    vim.eval("v:progname"),
-                    "--not-a-term",
-                    "--cmd",
-                    f"let g:pf_server_communiation_file='{self.file_path}'",
-                    "-u",
-                    vimrc_path,
-                ),
-                stdout=subprocess.DEVNULL,
-            )
+
+        # Used to open the server in a console window for development/debugging
+        # Set this option to e.g. `konsole -e`
+        dev_mode = "pf_dev_server_console" in vim.vars
+
+        vim_cmd = self._build_vim_cmd(vimrc_path, dev_mode)
+        self.server_process = subprocess.Popen(vim_cmd)
 
         self.server_connection = None
         self.to_send = None
+
+    def _build_vim_cmd(self, vimrc_path, dev_mode):
+        """
+        Build the command used to launch the server Vim.
+
+        :param vimrc_path: Path to serverrc.vim
+        :param dev_mode: If True, enable development mode, which opens the server in
+            a console (g:pf_dev_server_console) for viewing.
+        """
+        vim_cmd = list()
+        if dev_mode:
+            vim_cmd += vim.eval("g:pf_dev_server_console").split(" ")
+
+        progname = vim.eval("v:progname")  # vim/gvim/neovim
+        vim_cmd.append(progname)
+
+        if dev_mode:
+            # Tell the server that we are in development mode
+            vim_cmd += [
+                "--cmd",
+                "let g:pf_dev_server_console=1",
+            ]
+        elif progname == "neovim":
+            # Disable UI completely
+            vim_cmd.append("--headless")
+        else:
+            # Disable warnings about not being a terminal
+            vim_cmd.append("--not-a-term")
+
+
+        return vim_cmd + [
+            "--cmd",
+            f"let g:pf_server_communiation_file='{self.file_path}'",
+            "-u",
+            vimrc_path,
+        ]
 
     def close(self):
         """Shut down the server Vim."""
