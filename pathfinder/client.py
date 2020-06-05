@@ -61,9 +61,8 @@ class Client:
                 stdout=subprocess.DEVNULL,
             )
 
-        # poll_responses will see this is None and look for the ability to connect
-        # instead of received messages
         self.server_connection = None
+        self.to_send = None
 
     def close(self):
         """Shut down the server Vim."""
@@ -80,7 +79,17 @@ class Client:
             try:
                 self.server_connection = connection.Client(self.file_path)
             except FileNotFoundError:
-                pass
+                # Check status of server process
+                return_code = self.server_process.poll()
+                if return_code is not None:
+                    # Server did not connect because of an error
+                    raise Exception("Pathfinding server process exited with return code {return_code}")
+                # else: just waiting for server to launch
+
+        # Check if a request is waiting to be sent
+        elif self.to_send is not None:
+            self.server_connection.send(self.to_send)
+            self.to_send = None
 
         # Check if any data is available to be read
         elif self.server_connection.poll():
@@ -102,11 +111,7 @@ class Client:
             self.callback(data)
             del self.callback
         elif response_type == "ERROR":
-            print(
-                "Pathfinding server encountered an unexpected exception:",
-                data,
-                sep="\n",
-            )
+            raise Exception("Pathfinding server encountered an exception:\n" + data)
         else:
             raise Exception("Received an unexpected response " + response_type)
 
@@ -122,26 +127,24 @@ class Client:
         self.callback = callback
 
         min_line, max_line = get_line_limits(start_view, target_view)
-        self.server_connection.send(
-            {
-                "start": start_view,
-                "target": target_view,
-                "min_line": min_line,
-                "max_line": max_line,
-                # Using vim.vars would return a vim.list object which we cannot send
-                # because it can't be pickled
-                "motions": vim.eval("g:pf_motions"),
-                "scrolloff": vim.options["scrolloff"],
-                "size": (
-                    # WindowTextWidth() - see plugin/dimensions.vim
-                    vim.eval("WindowTextWidth()"),
-                    vim.eval("winheight(0)"),
-                ),
-                # We don't need to join these lines together, the server expects
-                # (and needs) them in list form
-                "buffer": vim.eval("getline(0,'$')"),
-            }
-        )
+        self.to_send = {
+            "start": start_view,
+            "target": target_view,
+            "min_line": min_line,
+            "max_line": max_line,
+            # Using vim.vars would return a vim.list object which we cannot send
+            # because it can't be pickled
+            "motions": vim.eval("g:pf_motions"),
+            "scrolloff": vim.options["scrolloff"],
+            "size": (
+                # WindowTextWidth() - see plugin/dimensions.vim
+                vim.eval("WindowTextWidth()"),
+                vim.eval("winheight(0)"),
+            ),
+            # We don't need to join these lines together, the server expects
+            # (and needs) them in list form
+            "buffer": vim.eval("getline(0,'$')"),
+        }
 
 
 client = Client()
