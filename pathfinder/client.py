@@ -40,7 +40,10 @@ class Client:
         dev_mode = "pf_dev_server_console" in vim.vars
 
         vim_cmd = self._build_vim_cmd(vimrc_path, dev_mode)
-        self.server_process = subprocess.Popen(vim_cmd)
+        if dev_mode:
+            self.server_process = subprocess.Popen(vim_cmd)
+        else:
+            self.server_process = subprocess.Popen(vim_cmd, stdout=subprocess.DEVNULL)
 
         self.server_connection = None
         self.to_send = None
