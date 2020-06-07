@@ -13,18 +13,13 @@ class StartNode:
 
     def __init__(self, view):
         self.view = view
-        self.g = 0
-        self.closed = False
-
-    def key(self):
-        return self.view["lnum"], self.view["col"]
 
     def test_motion(self, motion):
         """
         Attempt to run the given motion from this node's position within Vim.
 
-        :returns: Newly-created child node, if the motion moved the cursor to another
-            position and did not cause an error. Otherwise None.
+        :returns: New view, if the motion moved the cursor to another position and did
+            not cause an error. Otherwise None.
         """
         winrestview(self.view)
         try:
@@ -36,39 +31,30 @@ class StartNode:
         new_view = winsaveview()
         if not cursor_in_same_position(new_view, self.view):
             # The cursor has moved, return the newly created node
-            return Node(new_view, self, motion)
+            return new_view
 
     def child_nodes(self, motions, min_line, max_line):
         """
-        Generator which yields each found child node.
+        Generator which yields each found child node and the motion it was reached by.
 
         :param motions: List of motions to test.
         :param min_line: Child nodes before this line number will not be ignored.
         :param max_line: Child nodes after this line number will be ignored.
         """
         for motion in motions:
-            child_node = self.test_motion(motion)
+            child_view = self.test_motion(motion)
             if (
-                child_node is not None
-                and int(child_node.view["lnum"]) >= min_line
-                and int(child_node.view["lnum"]) <= max_line
+                child_view is not None
+                and int(child_view["lnum"]) >= min_line
+                and int(child_view["lnum"]) <= max_line
             ):
-                yield child_node
+                yield Node(child_view, self, motion), motion
 
     def __eq__(self, other):
-        return self.g == other.g
+        return self.view == other.view
 
-    def __gt__(self, other):
-        return self.g > other.g
-
-    def __lt__(self, other):
-        return self.g < other.g
-
-    def __ge__(self, other):
-        return self.g >= other.g
-
-    def __le__(self, other):
-        return self.g <= other.g
+    def __hash__(self):
+        return hash(tuple(self.view.items()))
 
 
 class Node(StartNode):
@@ -85,11 +71,11 @@ class Node(StartNode):
         self.view = view
         self.parent = parent
         self.incoming_motions = [motion]
-        self.closed = False
 
-        self.g = parent.g + self._calculate_g_increment(motion)
-
-    def _calculate_g_increment(self, motion):
+    def weight(self, motion):
+        """
+        Return the weight of reaching this node using the given motion.
+        """
         repetitions = 0
         for node in self.backtrack():
             if motion in node.incoming_motions:

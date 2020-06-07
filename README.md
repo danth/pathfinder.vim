@@ -31,6 +31,9 @@ else
 endif
 ```
 
+You may also need to run `git submodule update --init` from inside the plugin
+directory. Most popular plugin managers will do that automatically.
+
 
 ## Usage
 

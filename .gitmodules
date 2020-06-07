@@ -1,0 +1,3 @@
+[submodule "heapdict"]
+	path = heapdict
+	url = https://github.com/DanielStutzbach/heapdict.git
