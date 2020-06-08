@@ -12,7 +12,9 @@ class NodeClosed(Exception):
     """
     Exception raised when trying to update a closed node.
     """
+
     pass
+
 
 class Path:
     """A path between a cursor start point and end point."""
@@ -126,4 +128,3 @@ class Path:
                         self._add_connection(child_view, motion)
                     except NodeClosed:
                         pass
-
