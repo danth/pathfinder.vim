@@ -33,28 +33,11 @@ class StartNode:
             # The cursor has moved, return the newly created node
             return new_view
 
-    def child_nodes(self, motions, min_line, max_line):
-        """
-        Generator which yields each found child node and the motion it was reached by.
-
-        :param motions: List of motions to test.
-        :param min_line: Child nodes before this line number will not be ignored.
-        :param max_line: Child nodes after this line number will be ignored.
-        """
-        for motion in motions:
-            child_view = self.test_motion(motion)
-            if (
-                child_view is not None
-                and int(child_view["lnum"]) >= min_line
-                and int(child_view["lnum"]) <= max_line
-            ):
-                yield Node(child_view, self, motion), motion
-
     def __eq__(self, other):
         return self.view == other.view
 
     def __hash__(self):
-        return hash(tuple(self.view.items()))
+        return hash(tuple(self.view.values()))
 
 
 class Node(StartNode):
@@ -72,16 +55,20 @@ class Node(StartNode):
         self.parent = parent
         self.incoming_motions = [motion]
 
-    def weight(self, motion):
+    def weight(self, motion, parent):
         """
         Return the weight of reaching this node using the given motion.
+
+        :param motion: Motion to get the weight for.
+        :param parent: Node the motion originated from.
         """
-        repetitions = 0
-        for node in self.backtrack():
-            if motion in node.incoming_motions:
-                repetitions += 1
-            else:
-                break
+        repetitions = 1
+        if isinstance(parent, Node):
+            for node in parent.backtrack():
+                if motion in node.incoming_motions:
+                    repetitions += 1
+                else:
+                    break
 
         if repetitions == 1:
             return motion.weight  # First use of this motion, e.g. gg -> j
