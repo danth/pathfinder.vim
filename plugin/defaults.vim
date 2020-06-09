@@ -30,6 +30,10 @@ if !exists('g:pf_motions')
     \ {'motion': 'H', 'weight': 1, 'description': 'To line {count} from the top of the window'},
     \ {'motion': 'M', 'weight': 1, 'description': 'To the middle of the window'},
     \ {'motion': 'L', 'weight': 1, 'description': 'To line {count} from the bottom of the window'},
+    \ {'motion': '\<C-f>', 'weight': 1, 'description': 'Scroll forward {count} pages'},
+    \ {'motion': '\<C-b>', 'weight': 1, 'description': 'Scroll backward {count} pages'},
+    \ {'motion': '\<C-d>', 'weight': 1, 'description': 'Scroll downward {count} times'},
+    \ {'motion': '\<C-u>', 'weight': 1, 'description': 'Scroll upward {count} times'},
     \
     \ {'motion': '0', 'weight': 1, 'description': 'To the start of the line'},
     \ {'motion': '^', 'weight': 1, 'description': 'To the first non-blank character on the line'},

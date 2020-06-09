@@ -23,7 +23,8 @@ class StartNode:
         """
         winrestview(self.view)
         try:
-            vim.command("silent! normal! " + motion.motion)
+            # `execute` is required to use motions like <C-f>
+            vim.command(f'execute "silent! normal! {motion.motion}"')
         except vim.error:
             # Ignore motions which fail
             return
