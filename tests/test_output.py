@@ -31,6 +31,6 @@ def test_explained_motions():
         }
     )
     assert list(explained_motions([motion1, motion2, motion2])) == [
-        "j    Down 1 lines",
-        "2k   Up 2 lines",
+        " j  Down 1 lines",
+        "2k  Up 2 lines",
     ]
