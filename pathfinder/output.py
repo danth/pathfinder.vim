@@ -6,7 +6,7 @@ import vim
 def get_count(motion, count):
     """Build a string like 'k', '2h', '15w'"""
     # Add a count only if there is more than 1 repetition
-    return (str(count) if count > 1 else "") + motion.motion
+    return (str(count) if count > 1 else "") + motion.name
 
 
 def compact_motions(motions):
@@ -29,11 +29,19 @@ def explained_motions(motions):
 
     e.g. ['5j   Down 5 lines', '$    To the end of the line']
     """
+    # List of tuples of (count, count combined with motion, Motion instance)
+    counted_motions = list()
     for motion, group in itertools.groupby(motions):
         repetitions = len(list(group))
         counted = get_count(motion, repetitions)
-        padding = " " * (5 - len(counted))
-        yield counted + padding + motion.description(repetitions)
+        counted_motions.append((repetitions, counted, motion))
+
+    # Maximum length of the '5j', '$' etc. strings
+    max_counted_len = max(len(c[1]) for c in counted_motions)
+
+    for repetitions, counted, motion in counted_motions:
+        padding = " " * (max_counted_len - len(counted))
+        yield padding + counted + "  " + motion.description(repetitions)
 
 
 def show_output(motions):
