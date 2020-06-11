@@ -41,6 +41,8 @@ if !exists('g:pf_motions')
     \ {'motion': '$', 'weight': 1, 'description': 'To the end of the line'},
     \ {'motion': 'g$', 'weight': 2, 'description': 'To the end of the display line'},
     \ {'motion': 'g_', 'weight': 2, 'description': 'To the last non-blank character on the line'},
+    \ {'motion': 'gm', 'weight': 2, 'description': 'To the centre of the screen'},
+    \ {'motion': 'gM', 'weight': 2, 'description': 'To the centre of the line'},
     \
     \ {'motion': 'W', 'weight': 1, 'description': '{count} WORDs forward (inclusive)'},
     \ {'motion': 'E', 'weight': 1, 'description': 'Forward to the end of WORD {count} (exclusive)'},
