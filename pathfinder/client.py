@@ -31,9 +31,7 @@ class Client:
         )
 
         self.server_process = subprocess.Popen(
-            self._build_server_cmd(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            self._build_server_cmd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
 
         self.server_connection = None
@@ -52,7 +50,7 @@ class Client:
                 # serverrc.vim in the root of this repository, instead of the user's
                 # regular .vimrc or init.vim
                 os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
-            )
+            ),
         ]
 
     def close(self):
