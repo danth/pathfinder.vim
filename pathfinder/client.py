@@ -30,57 +30,29 @@ class Client:
             tempfile.gettempdir(), "pathfinder_vim_" + vim.eval("getpid()")
         )
 
-        # serverrc.vim in the root of the repo
-        vimrc_path = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
+        self.server_process = subprocess.Popen(
+            self._build_server_cmd(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
         )
-
-        # Used to open the server in a console window for development/debugging
-        # Set this option to e.g. `konsole -e`
-        dev_mode = "pf_dev_server_console" in vim.vars
-
-        vim_cmd = self._build_vim_cmd(vimrc_path, dev_mode)
-        if dev_mode:
-            self.server_process = subprocess.Popen(vim_cmd)
-        else:
-            self.server_process = subprocess.Popen(vim_cmd, stdout=subprocess.DEVNULL)
 
         self.server_connection = None
         self.to_send = None
 
-    def _build_vim_cmd(self, vimrc_path, dev_mode):
-        """
-        Build the command used to launch the server Vim.
-
-        :param vimrc_path: Path to serverrc.vim
-        :param dev_mode: If True, enable development mode, which opens the server in
-            a console (g:pf_dev_server_console) for viewing.
-        """
-        vim_cmd = list()
-        if dev_mode:
-            vim_cmd += vim.eval("g:pf_dev_server_console").split(" ")
-
+    def _build_server_cmd(self):
+        """Build the command used to launch the server Vim."""
         progname = vim.eval("v:progname")  # vim/gvim/neovim
-        vim_cmd.append(progname)
-
-        if dev_mode:
-            # Tell the server that we are in development mode
-            vim_cmd += [
-                "--cmd",
-                "let g:pf_dev_server_console=1",
-            ]
-        elif progname == "neovim":
-            # Disable UI completely
-            vim_cmd.append("--headless")
-        else:
-            # Disable warnings about not being a terminal
-            vim_cmd.append("--not-a-term")
-
-        return vim_cmd + [
+        return [
+            progname,
+            "--headless" if progname == "nvim" else "--not-a-term",
             "--cmd",
             f"let g:pf_server_communiation_file='{self.file_path}'",
             "-u",
-            vimrc_path,
+            os.path.normpath(
+                # serverrc.vim in the root of this repository, instead of the user's
+                # regular .vimrc or init.vim
+                os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
+            )
         ]
 
     def close(self):
@@ -88,27 +60,16 @@ class Client:
         if self.server_connection is not None:
             # Server will shut down Vim gracefully when we disconnect
             self.server_connection.close()
-        else:
+        elif self.server_process is not None:
             # Not connected yet, terminate the process instead
             self.server_process.terminate()
 
     def poll_responses(self):
-        if self.server_connection is None:
-            # Check if the server has started listening yet
-            try:
-                self.server_connection = connection.Client(self.file_path)
-            except FileNotFoundError:
-                # Check status of server process
-                return_code = self.server_process.poll()
-                if return_code is not None:
-                    # Server did not connect because of an error
-                    raise Exception(
-                        f"Pathfinding server process exited with return code {return_code}"
-                    )
-                # else: just waiting for server to launch
+        if not self.connect():
+            return
 
         # Check if a request is waiting to be sent
-        elif self.to_send is not None:
+        if self.to_send is not None:
             self.server_connection.send(self.to_send)
             self.to_send = None
 
@@ -117,6 +78,36 @@ class Client:
             # Get response (sent in a tuple of type, data)
             response_type, data = self.server_connection.recv()
             self.handle_response(response_type, data)
+
+    def connect(self):
+        """
+        Attempt to connect to the server.
+
+        :returns: whether a connection is ready.
+        """
+        if self.server_connection is not None:
+            return True
+
+        if self.server_process is None:
+            # Server process has exited but we already raised an exception
+            return False
+
+        return_code = self.server_process.poll()
+        if return_code is not None:
+            # Server process has exited
+            stdout, stderr = self.server_process.communicate()
+            self.server_process = None
+            raise Exception(
+                f"Pathfinding server process exited with return code {return_code}:\n"
+                + stderr.decode()
+            )
+
+        try:
+            # Attempt to connect
+            self.server_connection = connection.Client(self.file_path)
+            return True
+        except FileNotFoundError:
+            return False
 
     def handle_response(self, response_type, data):
         """

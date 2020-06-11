@@ -6,8 +6,7 @@ def winsaveview():
 
 
 def winrestview(view):
-    f = vim.Function("winrestview")
-    f(view)
+    vim.eval(f"winrestview({view})")
 
 
 def cursor_in_same_position(a, b):

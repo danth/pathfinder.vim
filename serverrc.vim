@@ -9,4 +9,4 @@ filetype off
 syntax off
 
 " Add pathfinder.vim to runtimepath
-let &runtimepath = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let &runtimepath .= ',' . escape(expand('<sfile>:p:h'), '\,')

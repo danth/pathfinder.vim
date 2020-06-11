@@ -3,6 +3,7 @@ from multiprocessing import connection
 
 import vim
 
+from pathfinder.debytes import debytes
 from pathfinder.pathfinder import Path
 
 
@@ -21,7 +22,7 @@ class Server:
     """
 
     def __init__(self, file_path):
-        self.listener = connection.Listener(file_path.decode())
+        self.listener = connection.Listener(debytes(file_path))
 
     def run(self):
         try:
