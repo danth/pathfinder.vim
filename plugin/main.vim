@@ -14,9 +14,9 @@ import vim
 import sys
 from os.path import normpath, join
 
-plugin_root_dir = vim.eval("fnamemodify(resolve(expand('<sfile>:p')), ':h')")
-python_root_dir = normpath(join(plugin_root_dir, '..'))
-sys.path.insert(0, python_root_dir)
+plugin_root = vim.eval("fnamemodify(resolve(expand('<sfile>:p')), ':h')")
+sys.path.insert(0, normpath(join(plugin_root, '..')))
+sys.path.insert(0, normpath(join(plugin_root, '..', 'heapdict')))
 endpython
 
 

@@ -1,7 +1,7 @@
 import math
 
 import vim
-from heapdict.heapdict import heapdict
+from heapdict import heapdict
 
 from pathfinder.motion import Motion
 from pathfinder.node import Node, StartNode
