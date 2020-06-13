@@ -56,7 +56,6 @@ class Server:
                 if not self.client_connection.poll():
                     self.do_action(data)
             except:
-                self._dev_redraw()
                 # Send any unexpected exceptions back to the client
                 # to be displayed for debugging purposes
                 self.client_connection.send(("ERROR", traceback.format_exc()))
@@ -77,7 +76,6 @@ class Server:
         vim.options["columns"] = int(data["size"][0])
         vim.options["lines"] = vim.options["cmdheight"] + int(data["size"][1])
 
-        self._dev_redraw()
         self.pathfind()
 
     def pathfind(self):
@@ -90,11 +88,6 @@ class Server:
         # sent during the last iteration of the pathfinding loop.
         if not (motions is None or self.client_connection.poll()):
             self.client_connection.send(("RESULT", motions))
-
-    def _dev_redraw(self):
-        """Call redraw if development mode is set."""
-        if vim.vars.get("pf_dev_server_console"):
-            vim.command("redraw")
 
 
 server = Server(vim.vars["pf_server_communiation_file"])
