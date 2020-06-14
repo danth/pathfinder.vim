@@ -1,5 +1,5 @@
-from pathfinder.motion import Motion
 from pathfinder.client.output import compact_motions, explained_motions, get_count
+from pathfinder.motion import Motion
 
 
 def test_get_count():
