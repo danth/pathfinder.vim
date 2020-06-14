@@ -4,7 +4,7 @@ import vim
 from heapdict import heapdict
 
 from pathfinder.motion import Motion
-from pathfinder.node import Node, StartNode
+from pathfinder.server.node import Node, StartNode
 from pathfinder.window import cursor_in_same_position
 
 

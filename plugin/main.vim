@@ -22,9 +22,9 @@ endpython
 
 if exists('g:pf_server_communiation_file')
   " Importing this will run the server and connect back to the client
-  python3 import pathfinder.server
+  python3 import pathfinder.server.server
 else
-  python3 import pathfinder.commands as commands
+  python3 from pathfinder.client import commands
 
   " Manual commands to be used when autorun is disabled
   command! PathfinderBegin python3 commands.reset()

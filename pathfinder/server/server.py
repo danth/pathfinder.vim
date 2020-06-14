@@ -4,7 +4,7 @@ from multiprocessing import connection
 import vim
 
 from pathfinder.debytes import debytes
-from pathfinder.pathfinder import Path
+from pathfinder.server.pathfinder import Path
 
 
 class Server:

@@ -5,7 +5,7 @@ from multiprocessing import connection
 
 import vim
 
-from pathfinder.explore_lines import get_line_limits
+from pathfinder.client.explore_lines import get_line_limits
 
 
 class Client:
@@ -49,7 +49,7 @@ class Client:
             os.path.normpath(
                 # serverrc.vim in the root of this repository, instead of the user's
                 # regular .vimrc or init.vim
-                os.path.join(os.path.dirname(__file__), "..", "serverrc.vim")
+                os.path.join(os.path.dirname(__file__), "..", "..", "serverrc.vim")
             ),
         ]
 
