@@ -4,9 +4,16 @@ import vim
 
 
 def get_count(motion, count):
-    """Build a string like 'k', '2h', '15w'"""
-    # Add a count only if there is more than 1 repetition
-    return (str(count) if count > 1 else "") + motion.name
+    """Build a string like 'k', 'hh', '15w'"""
+    if count == 1:
+        return motion.name
+
+    elif count == 2 and len(motion.name) == 1:
+        # It's easier to press a single-character motion twice
+        # than to type a 2 before it
+        return motion.name + motion.name
+
+    return str(count) + motion.name
 
 
 def compact_motions(motions):
