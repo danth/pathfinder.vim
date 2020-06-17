@@ -3,18 +3,20 @@ import pytest
 from pathfinder.client.output import compact_motions, explained_motions, get_count
 from pathfinder.motion import Motion
 
-
 COUNTS = [
     ("j", 1, "j"),
     ("j", 2, "jj"),
     ("long", 2, "2long"),
     ("j", 3, "3j"),
-    ("j", 10, "10j")
+    ("j", 10, "10j"),
 ]
+
 
 @pytest.mark.parametrize("motion,count,expected", COUNTS, ids=[x[2] for x in COUNTS])
 def test_get_count(motion, count, expected):
-    motion = Motion({"motion": motion.encode(), "weight": 1, "description": "".encode()})
+    motion = Motion(
+        {"motion": motion.encode(), "weight": 1, "description": "".encode()}
+    )
     assert get_count(motion, count) == expected
 
 
