@@ -15,5 +15,5 @@ def motions():
             motion["motion"],
             motion["name"] if "name" in motion else motion["motion"],
             int(motion["weight"]),
-            motion["description"]
+            motion["description"],
         )
