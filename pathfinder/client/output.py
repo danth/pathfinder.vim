@@ -2,7 +2,6 @@ import itertools
 
 import vim
 
-
 last_output = None
 
 
