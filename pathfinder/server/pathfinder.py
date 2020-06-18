@@ -3,7 +3,7 @@ import math
 import vim
 from heapdict import heapdict
 
-from pathfinder.motion import Motion
+from pathfinder.motion import motions
 from pathfinder.server.node import Node, StartNode
 from pathfinder.window import cursor_in_same_position
 
@@ -23,7 +23,7 @@ class Path:
         self.from_view = from_view
         self.target_view = target_view
 
-        self.available_motions = [Motion(m) for m in vim.vars["pf_motions"]]
+        self.available_motions = list(motions())
 
         # This is a min-priority queue implemented using a heap, but is faster than
         # heapq because it uses a dictionary to allow us to update a node's priority

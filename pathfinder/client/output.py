@@ -48,7 +48,8 @@ def explained_motions(motions):
 
     for repetitions, counted, motion in counted_motions:
         padding = " " * (max_counted_len - len(counted))
-        yield padding + counted + "  " + motion.description(repetitions)
+        description = motion.description_template.replace("{count}", str(repetitions))
+        yield padding + counted + "  " + description
 
 
 def show_output(motions):
