@@ -26,6 +26,9 @@ if exists('g:pf_server_communiation_file')
 else
   python3 from pathfinder.client import commands
 
+  " This command displays an explanation of the most recent suggestion
+  command! PathfinderExplain python3 commands.explain()
+
   " Manual commands to be used when autorun is disabled
   command! PathfinderBegin python3 commands.reset()
   command! PathfinderRun python3 commands.update_current(); commands.run()

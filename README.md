@@ -6,7 +6,7 @@
 A Vim plugin to give suggestions to improve your movements.
 It's a bit like [Clippy][office-assistant].
 
-![Demo GIF](images/movements-v1.2.2.gif)
+![Demo GIF](images/movements.gif)
 
 [office-assistant]: https://en.wikipedia.org/wiki/Office_Assistant
 
@@ -40,9 +40,20 @@ directory. Most popular plugin managers will do that automatically.
 1. Move the cursor in normal, visual or visual-line mode.
 2. That's it.
 
-You will see the most recent suggestion at the bottom of the screen. This will
-either be in the form of a popup window, or `echo`ed if that Vim feature is not
-available.
+You'll see a popup above the cursor containing a suggestion. If your Vim does
+not have the `+popupwin` feature (added in 8.2) then it will be echoed instead.
+
+### Explanations
+
+If you don't understand how a suggestion works, you should use the
+`:PathfinderExplain` command, which will show a short description of each
+motion used.
+
+If you find yourself using this a lot, make a mapping for it!
+
+```vim
+noremap <leader>pe :PathfinderExplain<CR>
+```
 
 ### Manual Commands
 
@@ -89,10 +100,6 @@ setting a negative value.
 #### `g:pf_max_explore`
 Cap the number of surrounding lines explored (see above) to a maximum value.
 As usual, this can be disabled by making it negative. *Default: 10*
-
-#### `PathfinderPopup`
-This highlight group sets the style of the popup window used for suggestions
-when `+popupwin` is available.
 
 ### Motions
 

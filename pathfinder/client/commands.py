@@ -2,8 +2,8 @@ import time
 
 import vim
 
+import pathfinder.client.output as output
 from pathfinder.client.client import client
-from pathfinder.client.output import show_output
 from pathfinder.window import cursor_in_same_position, winsaveview
 
 
@@ -46,7 +46,7 @@ def run():
 
     if not cursor_in_same_position(start_state.view, current_state.view):
         # Start pathfinding in the background and call display_results when done
-        client.pathfind(start_state.view, current_state.view, show_output)
+        client.pathfind(start_state.view, current_state.view, output.show_output)
 
     reset()
 
@@ -87,6 +87,16 @@ def autorun():
         run()
     elif not cursor_in_same_position(current_state.view, new_state.view):
         current_state = new_state
+
+
+def explain():
+    """Called for the :PathfinderExplain command."""
+    if output.last_output is None:
+        print("No suggestion to explain.")
+    else:
+        # explained_motions yields each line
+        # sep tells print to put \n between them rather than space
+        print(*output.explained_motions(output.last_output), sep="\n")
 
 
 def stop():

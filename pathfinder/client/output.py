@@ -3,6 +3,9 @@ import itertools
 import vim
 
 
+last_output = None
+
+
 def get_count(motion, count):
     """Build a string like 'k', 'hh', '15w'"""
     if count == 1:
@@ -53,22 +56,22 @@ def explained_motions(motions):
 
 
 def show_output(motions):
+    global last_output
+    last_output = motions
+
     if int(vim.eval("has('nvim')")):
         print(compact_motions(motions))
     elif int(vim.eval("has('popupwin')")):
-        output = list(explained_motions(motions))
         vim.Function("popup_create")(
-            output,
+            compact_motions(motions),
             {
-                # 4 lines up from the bottom of the screen
-                "line": vim.options["lines"] - 4,
-                # No "col" option = centered on screen
-                # Make the "line" option relative to the bottom edge
-                "pos": "botleft",
+                "line": "cursor-1",
+                "col": "cursor",
                 "wrap": False,
                 "padding": (0, 1, 0, 1),
-                "highlight": "PathfinderPopup",
-                "time": 3000 + (500 * len(output)),
+                "highlight": "Cursor",
+                "time": 3000,
+                "zindex": 1000,
             },
         )
     else:
