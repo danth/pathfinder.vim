@@ -69,7 +69,7 @@ def show_output(motions):
                 "wrap": False,
                 "padding": (0, 1, 0, 1),
                 "highlight": "Cursor",
-                "time": 3000,
+                "time": int(vim.vars["pf_popup_time"]),
                 "zindex": 1000,
             },
         )

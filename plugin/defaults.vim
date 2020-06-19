@@ -2,6 +2,10 @@ if !exists('g:pf_autorun_delay')
   let g:pf_autorun_delay = 2
 endif
 
+if !exists('g:pf_popup_time')
+  let g:pf_popup_time = 3000
+endif
+
 if !exists('g:pf_explore_scale')
   let g:pf_explore_scale = 0.5
 endif

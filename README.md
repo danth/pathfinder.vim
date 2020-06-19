@@ -78,6 +78,10 @@ need to read this section if you don't want to.*
 
 ### General settings
 
+#### `g:pf_popup_time`
+Milliseconds to display the popup for. Not used for versions of Vim without
+`+popupwin`. *Default: 3000*
+
 #### `g:pf_autorun_delay`
 When this number of seconds have elapsed with no motions being made, the
 pathfinder will run. It also runs for other events such as changing modes.
