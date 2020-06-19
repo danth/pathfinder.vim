@@ -1,5 +1,2 @@
 include LICENSE README.md
-include plugin/*
-exclude tests/*
-
 include heapdict/LICENSE heapdict/heapdict.py
