@@ -33,7 +33,8 @@ else
   command! PathfinderBegin python3 commands.reset()
   command! PathfinderRun python3 commands.update_current(); commands.run()
 
-  " Set up a timer to call the loop function peroidically
+  " Loop which checks for messages from the server process, and decides
+  " when to start finding a new path
   function! PathfinderLoop(timer)
     " Check for responses from the server
     python3 commands.client.poll_responses()
@@ -43,10 +44,10 @@ else
       python3 commands.autorun()
     endif
   endfunction
-  augroup PathfinderStartOnEnter
-    autocmd!
-    autocmd VimEnter * let s:timer = timer_start(100, 'PathfinderLoop', {'repeat': -1})
-  augroup END
+  " Set up a timer to call the loop function periodically
+  if !exists("s:timer")
+    let s:timer = timer_start(100, 'PathfinderLoop', {'repeat': -1})
+  endif
 
   " Stop the loop and call the stop function on VimLeave
   augroup PathfinderStopOnLeave
