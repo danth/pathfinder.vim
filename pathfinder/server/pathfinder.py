@@ -4,6 +4,7 @@ import vim
 from heapdict import heapdict
 
 from pathfinder.motion import motions
+from pathfinder.server.child_views import child_views
 from pathfinder.server.node import Node, StartNode
 from pathfinder.window import cursor_in_same_position
 
@@ -112,19 +113,15 @@ class Path:
                 # We found the target!
                 return self._current_node.get_refined_path()
 
-            for motion in self.available_motions:
-                child_view = self._current_node.test_motion(motion)
-                if (
-                    child_view is not None
-                    and int(child_view["lnum"]) >= min_line
-                    and int(child_view["lnum"]) <= max_line
-                ):
-                    try:
-                        # Add a connection from self._current_node to the node
-                        # associated with the child view.
-                        # This will either replace the existing path into the node,
-                        # add the motion as an alternative, or create a new node if
-                        # one did not already exist.
-                        self._add_connection(child_view, motion)
-                    except NodeClosed:
-                        pass
+            for motion, child_view in child_views(
+                self._current_node, self.available_motions, min_line, max_line
+            ):
+                try:
+                    # Add a connection from self._current_node to the node
+                    # associated with the child view.
+                    # This will either replace the existing path into the node,
+                    # add the motion as an alternative, or create a new node if
+                    # one did not already exist.
+                    self._add_connection(child_view, motion)
+                except NodeClosed:
+                    pass
