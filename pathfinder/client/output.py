@@ -58,9 +58,35 @@ def show_output(motions):
     global last_output
     last_output = motions
 
-    if int(vim.eval("has('nvim')")):
-        print(compact_motions(motions))
+    if int(vim.eval("has('nvim-0.4')")):
+        ## Neovim >=0.4 floating windows ##
+        # There is no padding option so we add it ourselves
+        text = " " + compact_motions(motions) + " "
+        # Insert text into a scratch buffer
+        escaped_text = text.replace("'", r"\'")
+        buf_nr = vim.eval("nvim_create_buf(v:false, v:true)")
+        vim.eval(f"nvim_buf_set_lines({buf_nr}, 0, -1, v:true, ['{escaped_text}'])")
+
+        # Create a window containing the buffer
+        window_options = {
+            "relative": "cursor",
+            "row": -1,
+            "col": 0,
+            "style": "minimal",
+            "focusable": 0,
+            "height": 1,
+            "width": len(text),
+        }
+        win_nr = vim.eval(f"nvim_open_win({buf_nr}, 0, {window_options})")
+        # Set the highlight of the window to match the cursor
+        vim.eval(f"nvim_win_set_option({win_nr}, 'winhl', 'Normal:Cursor')")
+
+        # Create a timer to close the window
+        popup_time = int(vim.vars["pf_popup_time"])
+        vim.eval(f"timer_start({popup_time}, {{-> nvim_win_close({win_nr}, 1)}})")
     elif int(vim.eval("has('popupwin')")):
+        ## Vim with +popupwin ##
+        # Much simpler than the Neovim equivalent!
         vim.Function("popup_create")(
             compact_motions(motions),
             {
@@ -74,4 +100,5 @@ def show_output(motions):
             },
         )
     else:
+        ## Vim without +popupwin / Neovim <0.4 ##
         print(compact_motions(motions))

@@ -40,8 +40,12 @@ directory. Most popular plugin managers will do that automatically.
 1. Move the cursor in normal, visual or visual-line mode.
 2. That's it.
 
-You'll see a popup above the cursor containing a suggestion. If your Vim does
-not have the `+popupwin` feature (added in 8.2) then it will be echoed instead.
+Suggestions pop up above the cursor if you have:
+
+- Vim 8.2 or above, with `+popupwin`
+- Neovim 0.4 or above
+
+Otherwise, they will appear as a plain `echo` at the bottom of the screen.
 
 ### Explanations
 
@@ -79,8 +83,7 @@ need to read this section if you don't want to.*
 ### General settings
 
 #### `g:pf_popup_time`
-Milliseconds to display the popup for. Not used for versions of Vim without
-`+popupwin`. *Default: 3000*
+Milliseconds to display the popup for. *Default: 3000*
 
 #### `g:pf_autorun_delay`
 When this number of seconds have elapsed with no motions being made, the
