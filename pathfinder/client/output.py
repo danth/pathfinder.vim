@@ -58,7 +58,7 @@ def show_output(motions):
     global last_output
     last_output = motions
 
-    win_line = '+1' if vim.eval("line('.')") == '1' else '-1'
+    win_line = "+1" if vim.eval("line('.')") == "1" else "-1"
     if int(vim.eval("has('nvim-0.4')")):
         ## Neovim >=0.4 floating windows ##
         # There is no padding option so we add it ourselves
@@ -66,7 +66,9 @@ def show_output(motions):
         # Insert text into a scratch buffer
         escaped_text = text.replace("'", r"\'")
         buf_nr = vim.eval("nvim_create_buf(v:false, v:true)")
-        vim.eval(f"nvim_buf_set_lines({buf_nr}, 0, {win_line}, v:true, ['{escaped_text}'])")
+        vim.eval(
+            f"nvim_buf_set_lines({buf_nr}, 0, {win_line}, v:true, ['{escaped_text}'])"
+        )
 
         # Create a window containing the buffer
         window_options = {
