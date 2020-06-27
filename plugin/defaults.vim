@@ -64,10 +64,15 @@ if !exists('g:pf_motions')
     \ {'motion': ']M', 'weight': 2, 'description': '{count} next end of a method (Java or similar)'},
     \ {'motion': '[M', 'weight': 2, 'description': '{count} previous end of a method (Java or similar)'},
     \
-    \ {'motion': '*', 'weight': 1, 'description': 'Search forward for occurence {count} of the word nearest to the cursor'},
-    \ {'motion': '#', 'weight': 1, 'description': 'Search backward for occurence {count} of the word nearest to the cursor'},
-    \ {'motion': 'g*', 'weight': 2, 'description': 'Search forward for occurence {count} of the word nearest to the cursor, allowing matches which are not a whole word'},
-    \ {'motion': 'g#', 'weight': 2, 'description': 'Search backward for occurence {count} of the word nearest to the cursor, allowing matches which are not a whole word'},
+    \ {'motion': '*', 'weight': 1, 'description': 'Search forward for occurrence {count} of the word nearest to the cursor'},
+    \ {'motion': '#', 'weight': 1, 'description': 'Search backward for occurrence {count} of the word nearest to the cursor'},
+    \ {'motion': 'g*', 'weight': 2, 'description': 'Search forward for occurrence {count} of the word nearest to the cursor, allowing matches which are not a whole word'},
+    \ {'motion': 'g#', 'weight': 2, 'description': 'Search backward for occurrence {count} of the word nearest to the cursor, allowing matches which are not a whole word'},
     \ {'motion': '%', 'weight': 1, 'description': 'Go to the matching bracket'},
+    \
+    \ {'motion': 'f', 'weight': 2, 'description': 'To occurrence {count} of "{char}", to the right'},
+    \ {'motion': 't', 'weight': 2, 'description': 'Till before occurrence {count} of "{char}", to the right'},
+    \ {'motion': 'F', 'weight': 2, 'description': 'To occurrence {count} of "{char}", to the left'},
+    \ {'motion': 'T', 'weight': 2, 'description': 'Till after occurrence {count} of "{char}", to the left'},
     \ ]
 endif

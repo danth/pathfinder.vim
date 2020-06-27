@@ -2,7 +2,7 @@ import vim
 
 
 def winsaveview():
-    return vim.eval("winsaveview()")
+    return {k: int(v) for k, v in vim.eval("winsaveview()").items()}
 
 
 def winrestview(view):
