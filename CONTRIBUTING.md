@@ -15,10 +15,14 @@ your choice and use the path to that directory to install the plugin.
 
 ## Pathfinding
 
-The pathfinding algorithm used for motions is [Dijkstra's algorithm][dijkstra],
-which is just a greedy algorithm. It is extended to use an additional "refining"
-step after the path has been found, which chooses between congruent motions
-(two or more motions which go from and to the same location).
+The pathfinding algorithm used is [Dijkstra's algorithm][dijkstra], which is
+just a greedy algorithm. Vertices are generated on-the-fly rather than building
+the entire graph beforehand.
+
+Each vertex in the graph is a tuple of `(view, most recent motion)`.  `view` is
+the result of `winsaveview()` in Vim: this includes both the cursor and scroll
+positions. We need to store the most recent motion because it is used to
+calculate certain weights - `2fk` should be cheaper than `fkfy`.
 
 [dijkstra]: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
