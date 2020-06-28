@@ -13,23 +13,28 @@ def _ftFT(view, motion):
     we only need to update the column number.
     """
     line_text = vim.current.buffer[view.lnum - 1]
+    seen_characters = set()
+
     # characters = string of characters which may be accessible using this motion
     # column = lambda function which converts index in `characters` to a column number
-    if motion.motion == 'f':
+    if motion.motion == 'f' and view.col <= len(line_text):
         column = lambda i: view.col + i + 1
         characters = line_text[view.col + 1:]
-    elif motion.motion == 't':
+    elif motion.motion == 't' and view.col < len(line_text) - 1:
         column = lambda i: view.col + i + 1
         characters = line_text[view.col + 2:]
-    elif motion.motion == 'F':
+        seen_characters.add(line_text[view.col + 1])
+    elif motion.motion == 'F' and view.col > 0:
         column = lambda i: view.col - i - 1
         # Characters are reversed because we are looking backwards
         characters = line_text[:view.col][::-1]
-    elif motion.motion == 'T':
+    elif motion.motion == 'T' and view.col > 1:
         column = lambda i: view.col - i - 1
         characters = line_text[:view.col - 1][::-1]
+        seen_characters.add(line_text[view.col - 1])
+    else:
+        return
 
-    seen_characters = set()
     for i, character in enumerate(characters):
         # Only use each unique character once
         if character in seen_characters:
