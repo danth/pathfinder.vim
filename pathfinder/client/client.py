@@ -45,6 +45,7 @@ class Client:
             "--headless" if progname == "nvim" else "--not-a-term",
             "--cmd",
             f"let g:pf_server_communiation_file='{self.file_path}'",
+            "--clean",
             "-u",
             os.path.normpath(
                 # serverrc.vim in the root of this repository, instead of the user's
