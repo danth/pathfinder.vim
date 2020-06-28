@@ -1,7 +1,7 @@
 import vim
 
 from pathfinder.motion import Motion
-from pathfinder.window import winsaveview, winrestview, cursor_in_same_position, View
+from pathfinder.window import View, cursor_in_same_position, winrestview, winsaveview
 
 
 def _ftFT(view, motion):
@@ -17,20 +17,20 @@ def _ftFT(view, motion):
 
     # characters = string of characters which may be accessible using this motion
     # column = lambda function which converts index in `characters` to a column number
-    if motion.motion == 'f' and view.col <= len(line_text):
+    if motion.motion == "f" and view.col <= len(line_text):
         column = lambda i: view.col + i + 1
-        characters = line_text[view.col + 1:]
-    elif motion.motion == 't' and view.col < len(line_text) - 1:
+        characters = line_text[view.col + 1 :]
+    elif motion.motion == "t" and view.col < len(line_text) - 1:
         column = lambda i: view.col + i + 1
-        characters = line_text[view.col + 2:]
+        characters = line_text[view.col + 2 :]
         seen_characters.add(line_text[view.col + 1])
-    elif motion.motion == 'F' and view.col > 0:
+    elif motion.motion == "F" and view.col > 0:
         column = lambda i: view.col - i - 1
         # Characters are reversed because we are looking backwards
-        characters = line_text[:view.col][::-1]
-    elif motion.motion == 'T' and view.col > 1:
+        characters = line_text[: view.col][::-1]
+    elif motion.motion == "T" and view.col > 1:
         column = lambda i: view.col - i - 1
-        characters = line_text[:view.col - 1][::-1]
+        characters = line_text[: view.col - 1][::-1]
         seen_characters.add(line_text[view.col - 1])
     else:
         return
@@ -46,7 +46,7 @@ def _ftFT(view, motion):
             motion.motion + character,
             motion.name + character,
             motion.weight,
-            motion.description_template.replace("{char}", character)
+            motion.description_template.replace("{char}", character),
         )
         # Calculate the resulting position
         new_col = column(i)

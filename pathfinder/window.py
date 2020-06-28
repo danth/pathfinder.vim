@@ -2,7 +2,6 @@ from collections import namedtuple
 
 import vim
 
-
 # We create this namedtuple based on a real winsaveview()
 # in case an additional property is added in a future Vim.
 dummy_view = vim.eval("winsaveview()")

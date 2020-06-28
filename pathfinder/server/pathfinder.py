@@ -6,7 +6,6 @@ from pathfinder.motion import motions
 from pathfinder.server.child_views import child_views
 from pathfinder.window import cursor_in_same_position
 
-
 # A combination of a cursor location, scroll location, and most recent motion.
 # These become the vertices of the pathfinding graph.
 State = namedtuple("State", ("view", "motion"))
@@ -27,8 +26,8 @@ class Path:
         self.available_motions = list(motions())
 
         self._open_queue = heapdict()  # Min-priority queue: State -> Distance
-        self._open_nodes = dict()      # State -> Node
-        self._closed_nodes = dict()    # State -> Node
+        self._open_nodes = dict()  # State -> Node
+        self._closed_nodes = dict()  # State -> Node
 
         start_state = State(self.from_view, None)
         self._open_nodes[start_state] = Node(start_state, None, None)
@@ -51,10 +50,7 @@ class Path:
         else:
             # Calculate difference in length of the count
             # e.g. 2j -> 3j = 0,  9j -> 10j = 1
-            return (
-                len(str(node.motion_count - 1)) -
-                len(str(node.motion_count))
-            )
+            return len(str(node.motion_count - 1)) - len(str(node.motion_count))
 
     def _motion_count(self, state, parent):
         """
@@ -122,5 +118,7 @@ class Path:
             ):
                 state = State(view, motion)
                 if not state in self._closed_nodes:
-                    new_distance = current_distance + self._edge_weight(current_node, state)
+                    new_distance = current_distance + self._edge_weight(
+                        current_node, state
+                    )
                     self._process_edge(state, current_node, new_distance)
