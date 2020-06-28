@@ -1,3 +1,4 @@
+from collections import namedtuple
 from unittest import mock
 
 from pathfinder.client.explore_lines import get_explore_lines, get_line_limits
@@ -29,17 +30,19 @@ def test_get_explore_lines_scale_0():
 
 @mock.patch("pathfinder.client.explore_lines.get_explore_lines", return_value=0)
 def test_get_line_limits(mock_get_explore_lines):
+    View = namedtuple("View", "lnum")
     with mock.patch(
         "pathfinder.client.explore_lines.vim.current.buffer", ["line"] * 10
     ):
-        assert get_line_limits({"lnum": 2}, {"lnum": 8}) == (2, 8)
+        assert get_line_limits(View(2), View(8)) == (2, 8)
         assert mock_get_explore_lines.called_once_with(6)
 
 
 @mock.patch("pathfinder.client.explore_lines.get_explore_lines", return_value=2)
 def test_get_line_limits_with_explore(mock_get_explore_lines):
+    View = namedtuple("View", "lnum")
     with mock.patch(
         "pathfinder.client.explore_lines.vim.current.buffer", ["line"] * 10
     ):
-        assert get_line_limits({"lnum": 4}, {"lnum": 6}) == (2, 8)
+        assert get_line_limits(View(4), View(6)) == (2, 8)
         assert mock_get_explore_lines.called_once_with(4)

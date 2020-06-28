@@ -1,20 +1,20 @@
-import math
+from collections import namedtuple
 
-import vim
 from heapdict import heapdict
 
 from pathfinder.motion import motions
 from pathfinder.server.child_views import child_views
-from pathfinder.server.node import Node, StartNode
 from pathfinder.window import cursor_in_same_position
 
 
-class NodeClosed(Exception):
-    """
-    Exception raised when trying to update a closed node.
-    """
-
-    pass
+# A combination of a cursor location, scroll location, and most recent motion.
+# These become the vertices of the pathfinding graph.
+State = namedtuple("State", ("view", "motion"))
+# Associate a state with a previously-traversed node, and a counter of how many
+# times the most recent motion was repeated. We must store the most recent motion
+# and the counter because the weight of subsequent repetitions is dependent on
+# this (fx -> 2fx is cheaper than fx -> fxfy).
+Node = namedtuple("Node", ("state", "parent", "motion_count"))
 
 
 class Path:
@@ -26,75 +26,77 @@ class Path:
 
         self.available_motions = list(motions())
 
-        # This is a min-priority queue implemented using a heap, but is faster than
-        # heapq because it uses a dictionary to allow us to update a node's priority
-        # (g) faster.
-        self._open_nodes = heapdict()
+        self._open_queue = heapdict()  # Min-priority queue: State -> Distance
+        self._open_nodes = dict()      # State -> Node
+        self._closed_nodes = dict()    # State -> Node
 
-        # Dictionary of all nodes indexed by view.
-        self._nodes = dict()
+        start_state = State(self.from_view, None)
+        self._open_nodes[start_state] = Node(start_state, None, None)
+        self._open_queue[start_state] = 0
 
-        self._start_node = StartNode(self.from_view)
-        self._add_node(self._start_node, 0)
-
-    def _add_node(self, node, g):
-        key = tuple(node.view.values())
-        self._nodes[key] = node
-
-        self._open_nodes[node] = g
-
-    def _get_node(self, view):
-        key = tuple(view.values())
-        return self._nodes[key]
-
-    def _add_connection(self, view, motion):
+    def _edge_weight(self, node, state):
         """
-        Add a connection from self._current_node to the node associated with the given view.
-
-        This will either:
-        - Create a new node if one did not already exist
-        - Replace the existing route into the node if this motion is better
-        - Add this motion as an alternative
-        - Do nothing if this motion is worse than the existing route
-
-        :param view: The view (position and scroll details) of the connected node.
-        :param motion: Motion used to reach this node.
+        :param node: Parent node.
+        :param state: The state we are moving to.
+        :returns: Weight of the edge between `node` and `state`.
         """
-        try:
-            # Look for an existing node with this view
-            node = self._get_node(view)
-        except KeyError:
-            # Not found, initialize a new node
-            node = Node(view, self._current_node, motion)
-            node_g = self._current_g + node.weight(motion, self._current_node)
-            self._add_node(node, node_g)
+        if node.state.motion != state.motion:
+            # First use of this motion, e.g. gg -> j
+            # Use the motion's configured weight
+            return state.motion.weight
+        elif node.motion_count == 1:
+            # Count has been added, e.g. fx -> 2fx
+            # Add 1 unit for the extra character
+            return 1
         else:
-            self._update_node(node, motion)
+            # Calculate difference in length of the count
+            # e.g. 2j -> 3j = 0,  9j -> 10j = 1
+            return (
+                len(str(node.motion_count - 1)) -
+                len(str(node.motion_count))
+            )
 
-    def _update_node(self, node, motion):
+    def _motion_count(self, state, parent):
         """
-        Update node to use the given motion, only if it is better than the current path.
-
-        :param node: Node to update.
-        :param motion: Motion used from self._current_node to reach this node.
-        :raises NodeClosed: If the node to update is not in the open set.
+        :param state: State to get .motion_count for.
+        :param parent: The node used to reach this state.
+        :returns: Correct .motion_count for the node associated with the given state.
         """
-        try:
-            node_g = self._open_nodes[node]
-        except KeyError:
-            # The node exists, but is not in the open set, hence it must be closed
-            raise NodeClosed()
+        if parent.state.motion == state.motion:
+            # The same motion was repeated again, add a repetition
+            return parent.motion_count + 1
+        else:
+            # Changed motions, reset counter to 1
+            return 1
 
-        # Calculate what g would be if we reached `node` using this motion
-        new_node_g = self._current_g + node.weight(motion, self._current_node)
-        if new_node_g < node_g:
-            # This is a better route into the node
-            node.parent = self._current_node
-            node.incoming_motions = [motion]
-            self._open_nodes[node] = new_node_g
-        elif new_node_g == node_g and node.parent == self._current_node:
-            # This motion is congruent, add it as an alternative
-            node.incoming_motions.append(motion)
+    def _process_edge(self, state, parent, new_distance):
+        """
+        Process an edge between a parent and state.
+
+        If the state is not already associated with a node, create a node for it.
+        If the state is associated with a node, but this route is better, replace that
+        node with a new one using this improved route.
+
+        :param state: The state to create or update a node for.
+        :param parent: The node used to reach this state.
+        :param new_distance: The distance (cost) of using this route.
+        """
+        if state not in self._open_nodes or new_distance < self._open_queue[state]:
+            node = Node(state, parent, self._motion_count(state, parent))
+            self._open_nodes[state] = node
+            self._open_queue[state] = new_distance
+
+    def _backtrack(self, node):
+        """
+        Walk backwards through the parents of a node.
+
+        :returns: List of motions used to travel from the start node to this node.
+        """
+        motions = list()
+        while node.parent is not None:
+            motions.insert(0, node.state.motion)
+            node = node.parent
+        return motions
 
     def find_path(self, client_connection, min_line, max_line):
         """
@@ -106,22 +108,19 @@ class Path:
         :param min_line: Do not explore above this line number.
         :param max_line: Do not explore below this line number.
         """
-        while len(self._open_nodes) > 0 and not client_connection.poll():
-            self._current_node, self._current_g = self._open_nodes.popitem()
+        while len(self._open_queue) > 0 and not client_connection.poll():
+            current_state, current_distance = self._open_queue.popitem()
+            current_node = self._open_nodes.pop(current_state)
+            self._closed_nodes[current_state] = current_node
 
-            if cursor_in_same_position(self._current_node.view, self.target_view):
+            if cursor_in_same_position(current_state.view, self.target_view):
                 # We found the target!
-                return self._current_node.get_refined_path()
+                return self._backtrack(current_node)
 
-            for motion, child_view in child_views(
-                self._current_node, self.available_motions, min_line, max_line
+            for motion, view in child_views(
+                current_state.view, self.available_motions, min_line, max_line
             ):
-                try:
-                    # Add a connection from self._current_node to the node
-                    # associated with the child view.
-                    # This will either replace the existing path into the node,
-                    # add the motion as an alternative, or create a new node if
-                    # one did not already exist.
-                    self._add_connection(child_view, motion)
-                except NodeClosed:
-                    pass
+                state = State(view, motion)
+                if not state in self._closed_nodes:
+                    new_distance = current_distance + self._edge_weight(current_node, state)
+                    self._process_edge(state, current_node, new_distance)

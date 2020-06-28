@@ -1,9 +1,10 @@
 import vim
 
 from pathfinder.motion import Motion
+from pathfinder.window import winsaveview, winrestview, cursor_in_same_position, View
 
 
-def _ftFT(node, motion):
+def _ftFT(view, motion):
     """
     Yield each view accessible using the given f/t/F/T motion.
 
@@ -11,22 +12,22 @@ def _ftFT(node, motion):
     testing the motion inside Vim. Since f/t/F/T only ever work inside a single line,
     we only need to update the column number.
     """
-    line_text = vim.current.buffer[node.view["lnum"] - 1]
+    line_text = vim.current.buffer[view.lnum - 1]
     # characters = string of characters which may be accessible using this motion
     # column = lambda function which converts index in `characters` to a column number
     if motion.motion == 'f':
-        column = lambda i: node.view["col"] + i + 1
-        characters = line_text[node.view["col"] + 1:]
+        column = lambda i: view.col + i + 1
+        characters = line_text[view.col + 1:]
     elif motion.motion == 't':
-        column = lambda i: node.view["col"] + i + 1
-        characters = line_text[node.view["col"] + 2:]
+        column = lambda i: view.col + i + 1
+        characters = line_text[view.col + 2:]
     elif motion.motion == 'F':
-        column = lambda i: node.view["col"] - i - 1
+        column = lambda i: view.col - i - 1
         # Characters are reversed because we are looking backwards
-        characters = line_text[:node.view["col"]][::-1]
+        characters = line_text[:view.col][::-1]
     elif motion.motion == 'T':
-        column = lambda i: node.view["col"] - i - 1
-        characters = line_text[:node.view["col"] - 1][::-1]
+        column = lambda i: view.col - i - 1
+        characters = line_text[:view.col - 1][::-1]
 
     seen_characters = set()
     for i, character in enumerate(characters):
@@ -43,34 +44,54 @@ def _ftFT(node, motion):
             motion.description_template.replace("{char}", character)
         )
         # Calculate the resulting position
-        new_view = node.view.copy()
-        new_view["col"] = new_view["curswant"] = column(i)
+        new_col = column(i)
+        new_view = view._replace(col=new_col, curswant=new_col)
+
         yield new_motion, new_view
 
 
-def _all_child_views(node, available_motions):
+def _test_motion(view, motion):
+    """
+    Yield the resulting view of a motion, by testing it inside Vim.
+
+    :returns: New view, if the cursor moved and no errors were caused. Otherwise None.
+    """
+    winrestview(view)
+    try:
+        # execute is required to use motions like <C-f>
+        vim.command(f'execute "silent! normal! {motion.motion}"')
+    except vim.error:
+        # Ignore motions which fail
+        return
+
+    new_view = winsaveview()
+    if not cursor_in_same_position(new_view, view):
+        return new_view
+
+
+def _all_child_views(view, available_motions):
     for motion in available_motions:
         if motion.motion in "ftFT":
-            yield from _ftFT(node, motion)
+            yield from _ftFT(view, motion)
         else:
-            yield motion, node.test_motion(motion)
+            yield motion, _test_motion(view, motion)
 
 
-def child_views(node, available_motions, min_line, max_line):
+def child_views(view, available_motions, min_line, max_line):
     """
     Yield each child view found using the given list of motions.
 
     This will be in the form (motion, resulting view).
 
-    :param node: Node to find children of.
+    :param view: View to find children of.
     :param available_motions: List of motions available for use.
     :param min_line: Results above this line number will be ignored.
     :param max_line: Results below this line number will be ignored.
     """
-    for motion, child_view in _all_child_views(node, available_motions):
+    for motion, child_view in _all_child_views(view, available_motions):
         if (
             child_view is not None
-            and child_view["lnum"] >= min_line
-            and child_view["lnum"] <= max_line
+            and child_view.lnum >= min_line
+            and child_view.lnum <= max_line
         ):
             yield motion, child_view

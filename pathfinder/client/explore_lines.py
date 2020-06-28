@@ -35,8 +35,8 @@ def get_line_limits(start_view, target_view):
     :param target_view: The target position.
     :returns: Tuple of (min line, max line)
     """
-    min_line = min(int(start_view["lnum"]), int(target_view["lnum"]))
-    max_line = max(int(start_view["lnum"]), int(target_view["lnum"]))
+    min_line = min(int(start_view.lnum), int(target_view.lnum))
+    max_line = max(int(start_view.lnum), int(target_view.lnum))
     explore_lines = get_explore_lines(max_line - min_line)
 
     return (
