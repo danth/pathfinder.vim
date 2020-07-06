@@ -46,7 +46,12 @@ def run():
 
     if not cursor_in_same_position(start_state.view, current_state.view):
         # Start pathfinding in the background and call display_results when done
-        client.pathfind(start_state.view, current_state.view, output.show_output)
+        client.pathfind(
+            start_state.buffer_contents,
+            start_state.view,
+            current_state.view,
+            output.show_output,
+        )
 
     reset()
 

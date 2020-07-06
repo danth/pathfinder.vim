@@ -126,10 +126,11 @@ class Client:
         else:
             raise Exception("Received an unexpected response " + response_type)
 
-    def pathfind(self, start_view, target_view, callback):
+    def pathfind(self, buffer_contents, start_view, target_view, callback):
         """
         Request a pathfinding result from the server.
 
+        :param buffer_contents: List of lines we are pathfinding inside.
         :param start_view: The start position, in the current window.
         :param target_view: The target position, in the current window.
         :param callback: Function to be called once a path is found. Recieves a list
@@ -152,9 +153,7 @@ class Client:
                 vim.eval("WindowTextWidth()"),
                 vim.eval("winheight(0)"),
             ),
-            # We don't need to join these lines together, the server expects
-            # (and needs) them in list form
-            "buffer": vim.eval("getline(0,'$')"),
+            "buffer": buffer_contents,
         }
 
 
