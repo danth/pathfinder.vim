@@ -39,13 +39,17 @@ class Client:
 
     def _build_server_cmd(self):
         """Build the command used to launch the server Vim."""
-        progname = vim.eval("v:progname")  # vim/gvim/neovim
-        return [
-            progname,
-            "--headless" if progname == "nvim" else "--not-a-term",
+        progname = vim.eval("v:progname")  # vim/gvim/nvim etc
+
+        if progname == "nvim":
+            options = ["--headless"]
+        else:
+            options = ["-v", "--not-a-term"]
+
+        return [progname] + options + [
+            "--clean",
             "--cmd",
             f"let g:pf_server_communiation_file='{self.file_path}'",
-            "--clean",
             "-u",
             os.path.normpath(
                 # serverrc.vim in the root of this repository, instead of the user's
