@@ -46,17 +46,21 @@ class Client:
         else:
             options = ["-v", "--not-a-term"]
 
-        return [progname] + options + [
-            "--clean",
-            "--cmd",
-            f"let g:pf_server_communiation_file='{self.file_path}'",
-            "-u",
-            os.path.normpath(
-                # serverrc.vim in the root of this repository, instead of the user's
-                # regular .vimrc or init.vim
-                os.path.join(os.path.dirname(__file__), "..", "..", "serverrc.vim")
-            ),
-        ]
+        return (
+            [progname]
+            + options
+            + [
+                "--clean",
+                "--cmd",
+                f"let g:pf_server_communiation_file='{self.file_path}'",
+                "-u",
+                os.path.normpath(
+                    # serverrc.vim in the root of this repository, instead of the user's
+                    # regular .vimrc or init.vim
+                    os.path.join(os.path.dirname(__file__), "..", "..", "serverrc.vim")
+                ),
+            ]
+        )
 
     def close(self):
         """Shut down the server Vim."""
