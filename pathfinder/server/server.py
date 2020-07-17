@@ -7,6 +7,13 @@ from pathfinder.debytes import debytes
 from pathfinder.server.pathfinder import Path
 
 
+def restore_options(options, dict_):
+    """Restore options into a vim.options object from a dictionary"""
+    for k, v in dict_.items():
+        if v is not None:
+            options[k] = v
+
+
 class Server:
     """
     Local server which runs inside an instance of Vim in a separate process.
@@ -69,7 +76,10 @@ class Server:
 
         vim.current.buffer[:] = data["buffer"]
         vim.vars["pf_motions"] = data["motions"]
-        vim.options["scrolloff"] = data["scrolloff"]
+
+        restore_options(vim.options, data["options"])
+        restore_options(vim.current.buffer.options, data["bufoptions"])
+        restore_options(vim.current.window.options, data["winoptions"])
 
         # Set size of the entire Vim display to match the size of the
         # corresponding window in the client

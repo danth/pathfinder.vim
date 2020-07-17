@@ -8,6 +8,17 @@ import vim
 from pathfinder.client.explore_lines import get_line_limits
 
 
+def dict_options(options):
+    """Convert a vim.options object to a dictionary"""
+    dict_ = dict()
+    for option in options:
+        try:
+            dict_[option] = options[option]
+        except RuntimeError:
+            pass
+    return dict_
+
+
 class Client:
     """
     Starts and connects to a separate Vim instance used for testing motions.
@@ -155,13 +166,15 @@ class Client:
             # Using vim.vars would return a vim.list object which we cannot send
             # because it can't be pickled
             "motions": vim.eval("g:pf_motions"),
-            "scrolloff": vim.options["scrolloff"],
             "size": (
                 # WindowTextWidth() - see plugin/dimensions.vim
                 vim.eval("WindowTextWidth()"),
                 vim.eval("winheight(0)"),
             ),
             "buffer": buffer_contents,
+            "options": dict_options(vim.options),
+            "bufoptions": dict_options(vim.current.buffer.options),
+            "winoptions": dict_options(vim.current.window.options),
         }
 
 
