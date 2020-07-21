@@ -1,3 +1,5 @@
+highlight default link PathfinderPopup Cursor
+
 if !exists('g:pf_autorun_delay')
   let g:pf_autorun_delay = 2
 endif

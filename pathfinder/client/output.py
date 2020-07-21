@@ -82,7 +82,7 @@ def show_output(motions):
         }
         win_nr = vim.eval(f"nvim_open_win({buf_nr}, 0, {window_options})")
         # Set the highlight of the window to match the cursor
-        vim.eval(f"nvim_win_set_option({win_nr}, 'winhl', 'Normal:Cursor')")
+        vim.eval(f"nvim_win_set_option({win_nr}, 'winhl', 'Normal:PathfinderPopup')")
 
         # Create a timer to close the window
         popup_time = int(vim.vars["pf_popup_time"])
@@ -97,7 +97,7 @@ def show_output(motions):
                 "col": "cursor",
                 "wrap": False,
                 "padding": (0, 1, 0, 1),
-                "highlight": "Cursor",
+                "highlight": "PathfinderPopup",
                 "time": int(vim.vars["pf_popup_time"]),
                 "zindex": 1000,
             },
