@@ -71,7 +71,7 @@ class Server:
         vim.vars["pf_motions"] = data["motions"]
 
         vim.current.window.options["wrap"] = data["wrap"]
-        vim.current.window.options["scrolloff"] = data["scrolloff"]
+        vim.options["scrolloff"] = data["scrolloff"]
 
         # Set size of the entire Vim display to match the size of the
         # corresponding window in the client
