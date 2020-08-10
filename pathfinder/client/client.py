@@ -164,6 +164,7 @@ class Client:
             "buffer": buffer_contents,
             "wrap": vim.current.window.options["wrap"],
             "scrolloff": vim.options["scrolloff"],
+            "sidescrolloff": vim.options["sidescrolloff"],
         }
 
 

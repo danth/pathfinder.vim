@@ -72,6 +72,7 @@ class Server:
 
         vim.current.window.options["wrap"] = data["wrap"]
         vim.options["scrolloff"] = data["scrolloff"]
+        vim.options["sidescrolloff"] = data["sidescrolloff"]
 
         # Set size of the entire Vim display to match the size of the
         # corresponding window in the client
