@@ -43,7 +43,11 @@ class Client:
 
         if progname == "nvim":
             python3_host_prog = vim.eval("g:python3_host_prog")
-            options = ["--headless", "--cmd", f"let g:python3_host_prog='{python3_host_prog}'"]
+            options = [
+                "--headless",
+                "--cmd",
+                f"let g:python3_host_prog='{python3_host_prog}'",
+            ]
         else:
             options = ["-v", "--not-a-term"]
 
