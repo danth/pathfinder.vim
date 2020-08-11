@@ -18,8 +18,10 @@ class Node:
     def get_neighbours(self):
         """Yield all neighbours of this node."""
         for motion, view in child_views(
-            self.view, self.dijkstra.available_motions,
-            self.dijkstra.min_line, self.dijkstra.max_line
+            self.view,
+            self.dijkstra.available_motions,
+            self.dijkstra.min_line,
+            self.dijkstra.max_line,
         ):
             yield Node(self.dijkstra, view, motion)
 
@@ -35,9 +37,8 @@ class Node:
             # Difference in length of current and future count
             # 2j -> 3j = 0
             # 9j -> 10j = 1
-            return (
-                len(str(self.came_by_motion_repetitions + 1)) -
-                len(str(self.came_by_motion_repetitions))
+            return len(str(self.came_by_motion_repetitions + 1)) - len(
+                str(self.came_by_motion_repetitions)
             )
 
     def set_came_from(self, node):
@@ -60,4 +61,3 @@ class Node:
             motions.insert(0, node.came_by_motion)
             node = node.came_from
         return motions
-

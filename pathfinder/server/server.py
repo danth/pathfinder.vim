@@ -83,7 +83,9 @@ class Server:
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
-        dijkstra = Dijkstra(self.start_view, self.target_view, self.min_line, self.max_line)
+        dijkstra = Dijkstra(
+            self.start_view, self.target_view, self.min_line, self.max_line
+        )
         motions = dijkstra.find_path(self.client_connection)
 
         # If motions is None, that means we cancelled pathfinding because a new

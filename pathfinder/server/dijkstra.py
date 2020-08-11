@@ -1,7 +1,7 @@
 from heapdict import heapdict
 
-from pathfinder.server.node import Node
 from pathfinder.motion import motions
+from pathfinder.server.node import Node
 
 
 class Dijkstra:
@@ -50,8 +50,9 @@ class Dijkstra:
                 if node.key in self._closed_nodes:
                     continue
 
-                new_distance = (current_distance +
-                                current_node.motion_weight(node.came_by_motion))
+                new_distance = current_distance + current_node.motion_weight(
+                    node.came_by_motion
+                )
                 if (
                     node.key not in self._open_nodes
                     or new_distance < self._open_queue[node.key]
