@@ -1,15 +1,68 @@
 import vim
 
-from pathfinder.window import winsaveview, winrestview
-from pathfinder.server.motions import MotionGenerator, Motion
+from pathfinder.server.motions import Motion, MotionGenerator
+from pathfinder.window import winrestview, winsaveview
 
 
 class SimpleMotionGenerator(MotionGenerator):
-    MOTIONS = {"h", "j", "k", "l", "gj", "gk", "gg", "G", "H", "M", "L", "",
-               "", "", "", "", "", "zt", "z\", "z.", "zb", "z-",
-               "0", "^", "g^", "$", "g$", "g_", "gm", "gM", "W", "E", "B",
-               "gE", "w", "e", "b", "ge", "(", ")", "{", "}", "]]", "][","[[",
-               "[]", "]m", "[m", "]M", "[M", "*", "#", "g*", "g#", "%"}
+    MOTIONS = {
+        "h",
+        "j",
+        "k",
+        "l",
+        "gj",
+        "gk",
+        "gg",
+        "G",
+        "H",
+        "M",
+        "L",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "zt",
+        "z\
+",
+        "z.",
+        "zb",
+        "z-",
+        "0",
+        "^",
+        "g^",
+        "$",
+        "g$",
+        "g_",
+        "gm",
+        "gM",
+        "W",
+        "E",
+        "B",
+        "gE",
+        "w",
+        "e",
+        "b",
+        "ge",
+        "(",
+        ")",
+        "{",
+        "}",
+        "]]",
+        "][",
+        "[[",
+        "[]",
+        "]m",
+        "[m",
+        "]M",
+        "[M",
+        "*",
+        "#",
+        "g*",
+        "g#",
+        "%",
+    }
 
     def generate(self, view):
         for motion in self.MOTIONS:

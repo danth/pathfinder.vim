@@ -52,9 +52,7 @@ def explained_motions(motions):
     for motion, group in itertools.groupby(motions):
         repetitions = len(list(group))
         yield (
-            get_count(motion, repetitions)
-            + "  "
-            + get_description(motion, repetitions)
+            get_count(motion, repetitions) + "  " + get_description(motion, repetitions)
         )
 
 

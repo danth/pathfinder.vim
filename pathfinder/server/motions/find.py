@@ -1,6 +1,6 @@
 import vim
 
-from pathfinder.server.motions import MotionGenerator, Motion
+from pathfinder.server.motions import Motion, MotionGenerator
 
 
 class FindMotionGenerator(MotionGenerator):

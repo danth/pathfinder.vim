@@ -28,7 +28,9 @@ class Node:
         """Return the weight of using a motion from this node."""
         if motion != self.came_by_motion:
             # First repetition, return number of characters in the motion
-            return len(motion.motion) + (0 if motion.argument is None else len(motion.argument))
+            return len(motion.motion) + (
+                0 if motion.argument is None else len(motion.argument)
+            )
         elif self.came_by_motion_repetitions == 1:
             # Second repetition, adding a "2" is 1 extra character
             return 1

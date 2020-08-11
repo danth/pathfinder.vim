@@ -1,8 +1,7 @@
-from collections import namedtuple
 import abc
+from collections import namedtuple
 
 from pathfinder.server.node import Node
-
 
 # motion - The motion such as h,j,k,f,T,gM
 # argument - Used for the additional argument to f,t,/ etc
