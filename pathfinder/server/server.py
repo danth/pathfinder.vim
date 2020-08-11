@@ -4,7 +4,7 @@ from multiprocessing import connection
 import vim
 
 from pathfinder.debytes import debytes
-from pathfinder.server.pathfinder import Path
+from pathfinder.server.dijkstra import Dijkstra
 
 
 class Server:
@@ -83,8 +83,8 @@ class Server:
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
-        path = Path(self.start_view, self.target_view)
-        motions = path.find_path(self.client_connection, self.min_line, self.max_line,)
+        dijkstra = Dijkstra(self.start_view, self.target_view, self.min_line, self.max_line)
+        motions = dijkstra.find_path(self.client_connection)
 
         # If motions is None, that means we cancelled pathfinding because a new
         # request was received. We also check for another request now in case one was
