@@ -80,6 +80,9 @@ you get two commands instead:
 *pathfinder.vim works out-of-the box with the default configuration. You don't
 need to read this section if you don't want to.*
 
+### `highlight PathfinderPopup`
+Change the appearance of suggestion popups. *Default: same as cursor*
+
 ### `g:pf_popup_time`
 Milliseconds to display the popup for. *Default: 3000*
 
