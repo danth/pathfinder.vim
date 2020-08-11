@@ -157,9 +157,6 @@ class Client:
             "target": target_view,
             "min_line": min_line,
             "max_line": max_line,
-            # Using vim.vars would return a vim.list object which we cannot send
-            # because it can't be pickled
-            "motions": vim.eval("g:pf_motions"),
             "size": (
                 # WindowTextWidth() - see plugin/dimensions.vim
                 vim.eval("WindowTextWidth()"),

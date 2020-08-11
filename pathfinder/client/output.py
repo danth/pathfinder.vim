@@ -2,20 +2,23 @@ import itertools
 
 import vim
 
+from pathfinder.debytes import debytes
+
 last_output = None
 
 
 def get_count(motion, count):
     """Build a string like 'k', 'hh', '15w'"""
+    motion_str = motion.motion + (motion.argument or "")
     if count == 1:
-        return motion.name
+        return motion_str
 
-    elif count == 2 and len(motion.name) == 1:
+    elif count == 2 and len(motion_str) == 1:
         # It's easier to press a single-character motion twice
         # than to type a 2 before it
-        return motion.name + motion.name
+        return (motion_str) * 2
 
-    return str(count) + motion.name
+    return str(count) + motion_str
 
 
 def compact_motions(motions):
@@ -32,26 +35,27 @@ def compact_motions(motions):
     )
 
 
+def get_description(motion, repetitions):
+    description = debytes(vim.vars["pf_descriptions"][motion.motion])
+    description = description.replace("{count}", str(repetitions))
+    if motion.argument is not None:
+        description = description.replace("{argument}", motion.argument)
+    return description
+
+
 def explained_motions(motions):
     """
     Yield each motion in the form "motion <padding> help"
 
     e.g. ['5j   Down 5 lines', '$    To the end of the line']
     """
-    # List of tuples of (count, count combined with motion, Motion instance)
-    counted_motions = list()
     for motion, group in itertools.groupby(motions):
         repetitions = len(list(group))
-        counted = get_count(motion, repetitions)
-        counted_motions.append((repetitions, counted, motion))
-
-    # Maximum length of the '5j', '$' etc. strings
-    max_counted_len = max(len(c[1]) for c in counted_motions)
-
-    for repetitions, counted, motion in counted_motions:
-        padding = " " * (max_counted_len - len(counted))
-        description = motion.description_template.replace("{count}", str(repetitions))
-        yield padding + counted + "  " + description
+        yield (
+            get_count(motion, repetitions)
+            + "  "
+            + get_description(motion, repetitions)
+        )
 
 
 def show_output(motions):

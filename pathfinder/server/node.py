@@ -1,4 +1,3 @@
-from pathfinder.server.child_views import child_views
 from pathfinder.window import cursor_in_same_position
 
 
@@ -17,19 +16,19 @@ class Node:
 
     def get_neighbours(self):
         """Yield all neighbours of this node."""
-        for motion, view in child_views(
-            self.view,
-            self.dijkstra.available_motions,
-            self.dijkstra.min_line,
-            self.dijkstra.max_line,
-        ):
-            yield Node(self.dijkstra, view, motion)
+        for motion_generator in self.dijkstra.motion_generators:
+            for node in motion_generator.generate(self.view):
+                if (
+                    node.view.lnum >= self.dijkstra.min_line
+                    and node.view.lnum <= self.dijkstra.max_line
+                ):
+                    yield node
 
     def motion_weight(self, motion):
         """Return the weight of using a motion from this node."""
         if motion != self.came_by_motion:
             # First repetition, return number of characters in the motion
-            return motion.weight
+            return len(motion.motion) + (0 if motion.argument is None else len(motion.argument))
         elif self.came_by_motion_repetitions == 1:
             # Second repetition, adding a "2" is 1 extra character
             return 1

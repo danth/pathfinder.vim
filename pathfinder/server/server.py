@@ -68,7 +68,6 @@ class Server:
         self.max_line = data["max_line"]
 
         vim.current.buffer[:] = data["buffer"]
-        vim.vars["pf_motions"] = data["motions"]
 
         vim.current.window.options["wrap"] = data["wrap"]
         vim.options["scrolloff"] = data["scrolloff"]
