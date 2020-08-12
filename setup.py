@@ -8,6 +8,6 @@ setup(
     version=__version__,
     author="Daniel Thwaites",
     author_email="danthwaites30@btinternet.com",
-    url="https://github.com/AlphaMycelium/pathfinder.vim",
+    url="https://github.com/danth/pathfinder.vim",
     packages=find_packages(exclude=("tests",)),
 )

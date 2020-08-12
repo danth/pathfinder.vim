@@ -1,8 +1,5 @@
 # pathfinder.vim
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/maintainability)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/test_coverage)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/test_coverage)
-
 A Vim plugin to give suggestions to improve your movements.
 It's a bit like [Clippy][office-assistant].
 
@@ -25,7 +22,7 @@ Use your favorite plugin manager. I recommend
 
 ```vim
 if has('python3') && has('timers')
-  Plug 'AlphaMycelium/pathfinder.vim'
+  Plug 'danth/pathfinder.vim'
 else
   echoerr 'pathfinder.vim is not supported on this Vim installation'
 endif
