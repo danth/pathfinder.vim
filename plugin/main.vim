@@ -24,42 +24,26 @@ if exists('g:pf_server_communiation_file')
   " Importing this will run the server and connect back to the client
   python3 import pathfinder.server.server
 else
-  python3 from pathfinder.client import commands
+  python3 from pathfinder.client.plugin import Plugin; plugin = Plugin()
 
-  " This command displays an explanation of the most recent suggestion
-  command! PathfinderExplain python3 commands.explain()
+  command! PathfinderBegin python3 plugin.command_begin()
+  command! PathfinderRun python3 plugin.command_run()
+  command! PathfinderExplain python3 plugin.command_explain()
 
-  " Manual commands to be used when autorun is disabled
-  command! PathfinderBegin python3 commands.reset()
-  command! PathfinderRun python3 commands.update_current(); commands.run()
-
-  " Loop which checks for messages from the server process, and decides
-  " when to start finding a new path
   function! PathfinderLoop(timer)
     " Check for responses from the server
-    python3 commands.client.poll_responses()
-
-    if g:pf_autorun_delay > 0
-      " Only autorun if user has enabled it
-      python3 commands.autorun()
-    endif
+    python3 plugin.client.poll_responses()
+    " Check if we should take any actions automatically
+    python3 plugin.autorun()
   endfunction
-  " Set up a timer to call the loop function periodically
+
   if !exists("s:timer")
     let s:timer = timer_start(100, 'PathfinderLoop', {'repeat': -1})
   endif
-
-  " Stop the loop and call the stop function on VimLeave
   augroup PathfinderStopOnLeave
     autocmd!
-    autocmd VimLeave * if exists('s:timer') | call timer_stop(s:timer) | endif
-    autocmd VimLeave * python3 commands.stop()
-  augroup END
-
-  " Bind events to Python functions
-  augroup PathfinderEventBindings
-    autocmd!
-    autocmd WinEnter,TabEnter,BufNewFile,BufReadPre,SessionLoadPost * python3 commands.reset()
+    autocmd VimLeave * call timer_stop(s:timer)
+    autocmd VimLeave * python3 plugin.stop()
   augroup END
 endif
 

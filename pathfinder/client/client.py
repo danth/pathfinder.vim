@@ -167,6 +167,3 @@ class Client:
             "scrolloff": vim.options["scrolloff"],
             "sidescrolloff": vim.options["sidescrolloff"],
         }
-
-
-client = Client()
