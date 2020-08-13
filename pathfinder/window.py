@@ -2,16 +2,13 @@ from collections import namedtuple
 
 import vim
 
-# We create this namedtuple based on a real winsaveview()
-# in case an additional property is added in a future Vim.
-dummy_view = vim.eval("winsaveview()")
-View = namedtuple("View", dummy_view.keys())
+View = namedtuple("View", "lnum col curswant leftcol topline")
 
 
 def winsaveview():
     view_dict = vim.eval("winsaveview()")
-    view_dict = {k: int(v) for k, v in view_dict.items()}
-    return View(**view_dict)
+    # Any dictionary elements not in View._fields will be discarded
+    return View._make(int(view_dict[field]) for field in View._fields)
 
 
 def winrestview(view):
