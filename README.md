@@ -3,7 +3,7 @@
 A Vim plugin to give suggestions to improve your movements.
 It's a bit like [Clippy][office-assistant].
 
-![Demo GIF](images/movements.gif)
+[![Demo](https://asciinema.org/a/CYX4I94GGBsHZqMVc9N8MerFD.svg)](https://asciinema.org/a/CYX4I94GGBsHZqMVc9N8MerFD)
 
 [office-assistant]: https://en.wikipedia.org/wiki/Office_Assistant
 
