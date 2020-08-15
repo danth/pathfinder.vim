@@ -3,6 +3,7 @@ import time
 import vim
 
 import pathfinder.client.output as output
+from pathfinder.client.popup import open_popup
 from pathfinder.client.autorun import choose_action
 from pathfinder.client.client import Client
 from pathfinder.client.state_tracker import StateTracker
@@ -13,6 +14,7 @@ class Plugin:
     def __init__(self):
         self.client = Client()
         self.state_tracker = StateTracker()
+        self.last_output = None
 
     def _run(self):
         """Start calculating a path in the background."""
@@ -20,8 +22,12 @@ class Plugin:
             self.state_tracker.start_state.lines,
             self.state_tracker.start_state.view,
             self.state_tracker.target_state.view,
-            output.show_output,
+            self.popup,
         )
+
+    def popup(self, motions):
+        self.last_output = motions
+        open_popup(output.compact_motions(motions))
 
     def autorun(self):
         """Called on a timer several times per second."""
@@ -51,12 +57,12 @@ class Plugin:
 
     def command_explain(self):
         """Called for the :PathfinderExplain command."""
-        if output.last_output is None:
+        if self.last_output is None:
             print("No suggestion to explain.")
         else:
             # explained_motions yields each line
             # sep tells print to put \n between them rather than space
-            print(*output.explained_motions(output.last_output), sep="\n")
+            print(*output.explained_motions(self.last_output), sep="\n")
 
 
     def stop(self):
