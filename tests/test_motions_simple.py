@@ -1,8 +1,7 @@
 from unittest import mock
 
-from pathfinder.server.motions.simple import SimpleMotionGenerator
 from pathfinder.server.motions import Motion
-
+from pathfinder.server.motions.simple import SimpleMotionGenerator
 
 INPUT_VIEW = mock.sentinel.input_view
 OUTPUT_VIEW = mock.sentinel.output_view

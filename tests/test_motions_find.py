@@ -1,15 +1,14 @@
-from unittest import mock
 from collections import namedtuple
+from unittest import mock
 
-from pathfinder.server.motions.find import FindMotionGenerator
 from pathfinder.server.motions import Motion
-
+from pathfinder.server.motions.find import FindMotionGenerator
 
 View = namedtuple("View", "lnum col curswant")
 
 
 @mock.patch("pathfinder.server.motions.find.vim.current.buffer", ["abcdde"])
-@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self,v,m: (v, m))
+@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self, v, m: (v, m))
 def test_find_f():
     generator = FindMotionGenerator(None)
     output = list(generator._find(View(1, 0, 0), "f"))
@@ -29,7 +28,7 @@ def test_find_f_final_column():
 
 
 @mock.patch("pathfinder.server.motions.find.vim.current.buffer", ["abcdde"])
-@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self,v,m: (v, m))
+@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self, v, m: (v, m))
 def test_find_t():
     generator = FindMotionGenerator(None)
     output = list(generator._find(View(1, 0, 0), "t"))
@@ -48,7 +47,7 @@ def test_find_t_penultimate_column():
 
 
 @mock.patch("pathfinder.server.motions.find.vim.current.buffer", ["abcdde"])
-@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self,v,m: (v, m))
+@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self, v, m: (v, m))
 def test_find_F():
     generator = FindMotionGenerator(None)
     output = list(generator._find(View(1, 5, 5), "F"))
@@ -68,7 +67,7 @@ def test_find_F_first_column():
 
 
 @mock.patch("pathfinder.server.motions.find.vim.current.buffer", ["abcdde"])
-@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self,v,m: (v, m))
+@mock.patch.object(FindMotionGenerator, "_create_node", new=lambda self, v, m: (v, m))
 def test_find_T():
     generator = FindMotionGenerator(None)
     output = list(generator._find(View(1, 5, 5), "T"))

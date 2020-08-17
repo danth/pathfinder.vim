@@ -1,8 +1,9 @@
 from unittest import mock
+
 import pytest
 
-from pathfinder.server.node import Node
 from pathfinder.server.motions import Motion
+from pathfinder.server.node import Node
 
 
 def test_reconstruct_path():
@@ -47,6 +48,7 @@ def test_motion_weight_same_motion(repetitions, expected):
     node = Node(None, None, mock.sentinel.motion)
     node.came_by_motion_repetitions = repetitions
     assert node.motion_weight(mock.sentinel.motion) == expected
+
 
 @pytest.mark.parametrize(
     "motion,expected",

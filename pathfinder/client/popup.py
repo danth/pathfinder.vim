@@ -10,17 +10,21 @@ def _neovim_popup(text, line_offset):
     vim.api.buf_set_lines(buffer, 0, -1, True, [f" {text} "])
 
     # Create a window containing the buffer
-    window = vim.api.open_win(buffer, 0, {
-        "relative": "cursor",
-        "row": int(line_offset),
-        "col": 0,
-        "style": "minimal",
-        "focusable": 0,
-        "height": 1,
-        "width": len(text) + 2,
-    })
+    window = vim.api.open_win(
+        buffer,
+        0,
+        {
+            "relative": "cursor",
+            "row": int(line_offset),
+            "col": 0,
+            "style": "minimal",
+            "focusable": 0,
+            "height": 1,
+            "width": len(text) + 2,
+        },
+    )
     # Set the highlight of the window to match the cursor
-    vim.api.win_set_option(window, 'winhl', 'Normal:PathfinderPopup')
+    vim.api.win_set_option(window, "winhl", "Normal:PathfinderPopup")
 
     # Create a timer to close the window
     popup_time = int(vim.vars["pf_popup_time"])

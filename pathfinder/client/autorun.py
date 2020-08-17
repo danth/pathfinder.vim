@@ -37,4 +37,3 @@ def choose_action(start_state, current_state, update_time):
             return "pathfind"
         else:
             return "set_target"
-

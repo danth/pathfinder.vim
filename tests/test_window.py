@@ -1,12 +1,19 @@
-import pytest
 from unittest import mock
 
-from pathfinder.window import View, winsaveview, winrestview, cursor_in_same_position
+import pytest
 
+from pathfinder.window import View, cursor_in_same_position, winrestview, winsaveview
 
 TEST_DICT = {"lnum": 0, "col": 10, "curswant": 10, "leftcol": 5, "topline": 0}
-TEST_DICT_SOME_STRINGS = {"lnum": 0, "col": "10", "curswant": b"10", "leftcol": 5, "topline": "0"}
+TEST_DICT_SOME_STRINGS = {
+    "lnum": 0,
+    "col": "10",
+    "curswant": b"10",
+    "leftcol": 5,
+    "topline": "0",
+}
 TEST_VIEW = View(0, 10, 10, 5, 0)
+
 
 @mock.patch(
     "pathfinder.window.vim.eval",

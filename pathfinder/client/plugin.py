@@ -3,9 +3,9 @@ import time
 import vim
 
 import pathfinder.client.output as output
-from pathfinder.client.popup import open_popup
 from pathfinder.client.autorun import choose_action
 from pathfinder.client.client import Client
+from pathfinder.client.popup import open_popup
 from pathfinder.client.state_tracker import StateTracker
 from pathfinder.window import cursor_in_same_position
 
@@ -48,8 +48,7 @@ class Plugin:
         self.state_tracker.set_target()
 
         if cursor_in_same_position(
-            self.state_tracker.start_state.view,
-            self.state_tracker.target_state.view,
+            self.state_tracker.start_state.view, self.state_tracker.target_state.view,
         ):
             print("You must move the cursor to a new location first!")
         else:
@@ -63,7 +62,6 @@ class Plugin:
             # explained_motions yields each line
             # sep tells print to put \n between them rather than space
             print(*output.explained_motions(self.last_output), sep="\n")
-
 
     def stop(self):
         """Called when Vim is about to shut down."""

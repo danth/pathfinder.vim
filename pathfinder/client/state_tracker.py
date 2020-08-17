@@ -5,7 +5,6 @@ import vim
 
 from pathfinder.window import winsaveview
 
-
 State = namedtuple("State", "view mode buffer window lines")
 
 
@@ -62,5 +61,3 @@ class StateTracker:
             self._set_target(current_state)
 
         return result
-
-
