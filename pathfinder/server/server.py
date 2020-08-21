@@ -4,7 +4,7 @@ from multiprocessing import connection
 import vim
 
 from pathfinder.debytes import debytes
-from pathfinder.server.pathfinder import Path
+from pathfinder.server.dijkstra import Dijkstra
 
 
 class Server:
@@ -68,10 +68,10 @@ class Server:
         self.max_line = data["max_line"]
 
         vim.current.buffer[:] = data["buffer"]
-        vim.vars["pf_motions"] = data["motions"]
 
         vim.current.window.options["wrap"] = data["wrap"]
-        vim.current.window.options["scrolloff"] = data["scrolloff"]
+        vim.options["scrolloff"] = data["scrolloff"]
+        vim.options["sidescrolloff"] = data["sidescrolloff"]
 
         # Set size of the entire Vim display to match the size of the
         # corresponding window in the client
@@ -82,8 +82,10 @@ class Server:
 
     def pathfind(self):
         """Run the pathfinder, then send the result back to the client."""
-        path = Path(self.start_view, self.target_view)
-        motions = path.find_path(self.client_connection, self.min_line, self.max_line,)
+        dijkstra = Dijkstra(
+            self.start_view, self.target_view, self.min_line, self.max_line
+        )
+        motions = dijkstra.find_path(self.client_connection)
 
         # If motions is None, that means we cancelled pathfinding because a new
         # request was received. We also check for another request now in case one was

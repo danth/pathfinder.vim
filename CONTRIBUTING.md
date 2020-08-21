@@ -3,7 +3,7 @@
 *This file contains information about the inner workings of pathfinder.vim.
 You should also read these [general contributing guidelines][default-contributing].*
 
-[default-contributing]: https://github.com/AlphaMycelium/.github/blob/master/CONTRIBUTING.md
+[default-contributing]: https://github.com/danth/.github/blob/master/CONTRIBUTING.md
 
 ## Development environment
 

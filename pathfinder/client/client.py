@@ -42,7 +42,12 @@ class Client:
         progname = vim.eval("v:progname")  # vim/gvim/nvim etc
 
         if progname == "nvim":
-            options = ["--headless"]
+            python3_host_prog = vim.eval("g:python3_host_prog")
+            options = [
+                "--headless",
+                "--cmd",
+                f"let g:python3_host_prog='{python3_host_prog}'",
+            ]
         else:
             options = ["-v", "--not-a-term"]
 
@@ -152,9 +157,6 @@ class Client:
             "target": target_view,
             "min_line": min_line,
             "max_line": max_line,
-            # Using vim.vars would return a vim.list object which we cannot send
-            # because it can't be pickled
-            "motions": vim.eval("g:pf_motions"),
             "size": (
                 # WindowTextWidth() - see plugin/dimensions.vim
                 vim.eval("WindowTextWidth()"),
@@ -163,7 +165,5 @@ class Client:
             "buffer": buffer_contents,
             "wrap": vim.current.window.options["wrap"],
             "scrolloff": vim.options["scrolloff"],
+            "sidescrolloff": vim.options["sidescrolloff"],
         }
-
-
-client = Client()

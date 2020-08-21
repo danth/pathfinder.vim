@@ -1,12 +1,9 @@
 # pathfinder.vim
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/maintainability)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/39c08aa4ab5468133a9c/test_coverage)](https://codeclimate.com/github/AlphaMycelium/pathfinder.vim/test_coverage)
-
 A Vim plugin to give suggestions to improve your movements.
 It's a bit like [Clippy][office-assistant].
 
-![Demo GIF](images/movements.gif)
+[![Demo](https://asciinema.org/a/CYX4I94GGBsHZqMVc9N8MerFD.svg)](https://asciinema.org/a/CYX4I94GGBsHZqMVc9N8MerFD)
 
 [office-assistant]: https://en.wikipedia.org/wiki/Office_Assistant
 
@@ -25,7 +22,7 @@ Use your favorite plugin manager. I recommend
 
 ```vim
 if has('python3') && has('timers')
-  Plug 'AlphaMycelium/pathfinder.vim'
+  Plug 'danth/pathfinder.vim'
 else
   echoerr 'pathfinder.vim is not supported on this Vim installation'
 endif
@@ -80,17 +77,18 @@ you get two commands instead:
 *pathfinder.vim works out-of-the box with the default configuration. You don't
 need to read this section if you don't want to.*
 
-### General settings
+### `highlight PathfinderPopup`
+Change the appearance of suggestion popups. *Default: same as cursor*
 
-#### `g:pf_popup_time`
+### `g:pf_popup_time`
 Milliseconds to display the popup for. *Default: 3000*
 
-#### `g:pf_autorun_delay`
+### `g:pf_autorun_delay`
 When this number of seconds have elapsed with no motions being made, the
 pathfinder will run. It also runs for other events such as changing modes.
 A negative value will disable automatic suggestions. *Default: 2*
 
-#### `g:pf_explore_scale`
+### `g:pf_explore_scale`
 Multiplier which determines the range of lines to be explored around the start
 and target positions. This is calculated as (lines between start and target
 &times; multiplier) and added to both sides. *Default: 0.5*
@@ -104,41 +102,21 @@ If you have a powerful computer, you can increase this option to a high value
 to allow exploring more of the file. You can also disable it completely by
 setting a negative value.
 
-#### `g:pf_max_explore`
+### `g:pf_max_explore`
 Cap the number of surrounding lines explored (see above) to a maximum value.
 As usual, this can be disabled by making it negative. *Default: 10*
 
-### Motions
-
-A global variable is used to set the available motions:
+### `g:pf_descriptions`
+Dictionary of descriptions, used for `:PathfinderExplain`.
 
 ```vim
-let g:pf_motions = [
-  \ {'motion': 'h', 'weight': 1, 'description': 'Left {count} columns'},
-  \ {'motion': 'l', 'weight': 1, 'description': 'Right {count} columns'},
-  \ {'motion': 'j', 'weight': 1, 'description': 'Down {count} lines'},
-  \ {'motion': 'k', 'weight': 1, 'description': 'Up {count} lines'},
-  \ ...
-  \ ]
+let g:pf_descriptions['k'] = 'Up {count} lines'
+let g:pf_descriptions['f'] = 'To occurence {count} of "{argument}", to the right'
 ```
 
-This contains all the supported motions by default. If you do decide to change
-it, you will need to copy the entire list from [defaults.vim](plugin/defaults.vim).
-There is no way to edit a single motion without doing that.
+Ensure the plugin is loaded before trying to override keys.  Otherwise, the
+default dictionary will not exist and you'll get an error.
 
-The higher a motion's `weight`, the less the pathfinding algorithm wants to use
-that motion. The path with the lowest total weight wins. The default settings
-use the number of characters in the motion as its weight (excluding modifier
-keys).
-
-Repeating a motion will not use its predefined weight. Instead, the cost is
-calculated based on the effect adding another repetition will have on the
-count. This is easier to explain with examples:
-
-| Motion | Cost of adding the repetition |
-| --- | --- |
-| `j` | (uses configured weight) |
-| `j` -> `2j` | 1, since the `2` has been added |
-| `2j` -> `3j` | 0, because `3j` is no longer than `2j` |
-| `9j` -> `10j` | 1, since `10j` is a character longer than `9j` |
-| `1j` -> `100j` | 2, since `100j` is 2 characters longer than `1j` |
+Re-defining the entire dictionary is not recommended since it could cause
+problems if support for a new motion is added and you don't have a description
+for it.

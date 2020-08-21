@@ -21,16 +21,10 @@ jobs:
     - name: Install test dependencies
       run: |
         python -m pip install -r test_requirements.txt \
-        pytest-cov pytest-github-actions-annotate-failures
+        pytest-github-actions-annotate-failures
 
     - name: Test
-      uses: paambaati/codeclimate-action@v2.5.5
-      env:
-        CC_TEST_REPORTER_ID: 2a15e754c01e881bb38b15428a09d87eab35df4f8e6bcefa6d7f9e360b77b540
-      with:
-        coverageCommand: |
-          pytest -v --cov=pathfinder --cov-report=xml
-        coverageLocations: 'coverage.xml:coverage.py'
+      run: pytest -v
 
   beautify:
     name: Beautify Python code
