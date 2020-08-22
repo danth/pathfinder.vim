@@ -14,18 +14,21 @@ COUNTS = [
 ]
 
 
+@mock.patch("pathfinder.client.output.strtrans", lambda x: x)
 @pytest.mark.parametrize("motion,count,expected", COUNTS, ids=[x[2] for x in COUNTS])
 def test_get_count(motion, count, expected):
     motion = Motion(motion, None)
     assert get_count(motion, count) == expected
 
 
+@mock.patch("pathfinder.client.output.strtrans", lambda x: x)
 def test_compact_motions():
     motion1 = Motion("j", None)
     motion2 = Motion("k", None)
     assert compact_motions([motion1, motion2, motion2, motion2]) == "j 3k"
 
 
+@mock.patch("pathfinder.client.output.strtrans", lambda x: x)
 def test_explained_motions():
     motion1 = Motion("j", None)
     motion2 = Motion("f", "g")

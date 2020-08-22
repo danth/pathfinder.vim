@@ -7,9 +7,15 @@ from pathfinder.debytes import debytes
 last_output = None
 
 
+def strtrans(string):
+    """Convert special characters like '' to '^D'."""
+    escaped_string = string.replace("'", "\\'").replace("\\", "\\\\")
+    return vim.eval(f"strtrans('{escaped_string}')")
+
+
 def get_count(motion, count):
     """Build a string like 'k', 'hh', '15w'"""
-    motion_str = motion.motion + (motion.argument or "")
+    motion_str = strtrans(motion.motion + (motion.argument or ""))
     if count == 1:
         return motion_str
 
