@@ -1,5 +1,6 @@
 from unittest import mock
 
+from pathfinder.server.motions import Motion
 from pathfinder.server.motions.search import SearchMotionGenerator
 
 
@@ -9,14 +10,14 @@ def test_escape_magic():
 
 def test_search_finds_shortest_possible_query():
     generator = SearchMotionGenerator(None)
-    assert generator._search("abcde", 0, 2) == "c"
-    assert generator._search("abcbcde", 0, 3) == "bcd"
+    assert generator._search("abcde", 0, 2) == Motion("/", "c")
+    assert generator._search("abcbcdebbc", 0, 3) == Motion("/", "bcd")
 
 
 def test_search_when_target_is_before_start():
     generator = SearchMotionGenerator(None)
-    assert generator._search("abcde", 2, 0) == "a"
-    assert generator._search("bcdabc", 3, 0) == "bcd"
+    assert generator._search("abcde", 2, 0) == Motion("/", "a")
+    assert generator._search("bcdabc", 3, 0) == Motion("?", "b")
 
 
 @mock.patch.object(SearchMotionGenerator, "_search")

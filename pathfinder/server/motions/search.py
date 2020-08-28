@@ -10,23 +10,23 @@ class SearchMotionGenerator(MotionGenerator):
         if view != self.dijkstra.from_view:
             return
 
-        search_query = self._search_lines(
+        motion = self._search_lines(
             vim.current.buffer[:],
             view.lnum - 1,
             view.col,
             self.dijkstra.target_view.lnum - 1,
             self.dijkstra.target_view.col,
         )
-        if search_query is not None:
-            motion = Motion("/", self._escape_magic(search_query) + "\")
+        if motion:
             yield self._create_node(self.dijkstra.target_view, motion)
 
+    def _create_motion(self, search_query, motion="/"):
+        return Motion(motion, self._escape_magic(search_query))
 
     def _escape_magic(self, search_query):
         for char in r"\^$.*[~/":
             search_query = search_query.replace(char, "\\" + char)
         return search_query
-
 
     def _search(self, text, start, target):
         search_text = text[target:]
@@ -48,7 +48,9 @@ class SearchMotionGenerator(MotionGenerator):
                 matches.sort(key=lambda position: position <= start)
 
                 if matches[0] == target:
-                    return query
+                    return self._create_motion(query)
+                if matches[-1] == target:
+                    return self._create_motion(query, "?")
 
     def _search_lines(self, lines, start_line, start_col, target_line, target_col):
         text = "\n".join(lines)
