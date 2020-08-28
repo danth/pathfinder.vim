@@ -1,2 +1,3 @@
 include LICENSE README.md
+include plugin/* colors/* ftdetect/* ftplugin/* indent/* compiler/* after/* autoload/* doc/*
 include heapdict/LICENSE heapdict/heapdict.py
