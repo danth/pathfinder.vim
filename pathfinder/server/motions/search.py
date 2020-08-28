@@ -1,3 +1,5 @@
+import re
+
 import vim
 
 from pathfinder.server.motions import Motion, MotionGenerator
@@ -29,16 +31,24 @@ class SearchMotionGenerator(MotionGenerator):
     def _search(self, text, start, target):
         search_text = text[target:]
 
-        text = text[start + 1 :] + text[:start]
-        target -= start + 1
-        if target < 0:
-            target = len(text) + target + 1
-
+        # ("a", "ab", "abc", "abcd"...) until we reach
+        # the end of search_text or find a working query
         for query_length in range(1, len(search_text) + 1):
             query = search_text[:query_length]
-            if text.find(query) == target:
-                return query
 
+            # Get a list of all match positions for this search query
+            # query="x" text="x___x_xx" == [0, 4, 6, 7]
+            pattern = re.escape(query)
+            matches = [m.start() for m in re.finditer(pattern, text)]
+
+            if matches:
+                # Sort the list so it begins with matches after `start`, rather
+                # than matches at the beginning of the file
+                # sorted([True, False]) == [False, True]
+                matches.sort(key=lambda position: position <= start)
+
+                if matches[0] == target:
+                    return query
 
     def _search_lines(self, lines, start_line, start_col, target_line, target_col):
         text = "\n".join(lines)
