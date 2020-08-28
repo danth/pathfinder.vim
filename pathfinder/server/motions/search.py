@@ -7,6 +7,7 @@ from pathfinder.server.motions import Motion, MotionGenerator
 
 class SearchMotionGenerator(MotionGenerator):
     def generate(self, view):
+        # Only return results from the starting node
         if view != self.dijkstra.from_view:
             return
 
@@ -24,11 +25,19 @@ class SearchMotionGenerator(MotionGenerator):
         return Motion(motion, self._escape_magic(search_query))
 
     def _escape_magic(self, search_query):
+        """Add backslash escapes to any "magic" characters in a query."""
         for char in r"\^$.*[~/":
             search_query = search_query.replace(char, "\\" + char)
         return search_query
 
     def _search(self, text, start, target):
+        """
+        Return the simplest possible searching motion to reach the given target.
+
+        :param text: Contents of the file.
+        :param start: Index in ``text`` to start the search from.
+        :param target: Index of the target position in ``text``.
+        """
         search_text = text[target:]
 
         # ("a", "ab", "abc", "abcd"...) until we reach
@@ -53,6 +62,15 @@ class SearchMotionGenerator(MotionGenerator):
                     return self._create_motion(query, "?")
 
     def _search_lines(self, lines, start_line, start_col, target_line, target_col):
+        """
+        Wrapper around _search which handles 2d coordinates and a list of lines.
+
+        :param lines: List of lines.
+        :param start_line: Starting line, indexed from 0.
+        :param start_col: Starting column.
+        :param target_line: Target line, indexed from 0.
+        :param target_col: Target column.
+        """
         text = "\n".join(lines)
         start = sum(len(line) + 1 for line in lines[:start_line]) + start_col
         target = sum(len(line) + 1 for line in lines[:target_line]) + target_col
