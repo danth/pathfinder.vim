@@ -36,7 +36,7 @@ class SearchMotionGenerator(MotionGenerator):
 
         for query_length in range(1, len(search_text) + 1):
             query = search_text[:query_length]
-            if text.index(query) == target:
+            if text.find(query) == target:
                 return query
 
 
