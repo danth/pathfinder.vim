@@ -77,5 +77,7 @@ if !exists('g:pf_descriptions')
     \ 't': 'Till before occurrence {count} of "{argument}", to the right',
     \ 'F': 'To occurrence {count} of "{argument}", to the left',
     \ 'T': 'Till after occurrence {count} of "{argument}", to the left',
+    \ '/': 'Search forwards for occurence {count} of "{argument}"',
+    \ '?': 'Search backwards for occurence {count} of "{argument}"',
     \ }
 endif

@@ -1,6 +1,7 @@
 from heapdict import heapdict
 
 from pathfinder.server.motions.find import FindMotionGenerator
+from pathfinder.server.motions.search import SearchMotionGenerator
 from pathfinder.server.motions.simple import SimpleMotionGenerator
 from pathfinder.server.node import Node
 
@@ -24,6 +25,7 @@ class Dijkstra:
         self.motion_generators = {
             SimpleMotionGenerator(self),
             FindMotionGenerator(self),
+            SearchMotionGenerator(self),
         }
 
         self._open_queue = heapdict()  # Min-priority queue: Key -> Distance

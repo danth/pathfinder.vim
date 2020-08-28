@@ -10,8 +10,8 @@ It's a bit like [Clippy][office-assistant].
 
 ## Features
 
-- Automatic suggestions for cursor movements
-- Help summaries to aid in understanding
+- Find the shortest motion sequence or search query to move the cursor
+- Help summaries to explain a suggestion
 - Asynchronous - pathfinding runs in a separate process
 
 
