@@ -48,7 +48,8 @@ class Plugin:
         self.state_tracker.set_target()
 
         if cursor_in_same_position(
-            self.state_tracker.start_state.view, self.state_tracker.target_state.view,
+            self.state_tracker.start_state.view,
+            self.state_tracker.target_state.view,
         ):
             print("You must move the cursor to a new location first!")
         else:

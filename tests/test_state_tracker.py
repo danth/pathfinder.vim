@@ -8,7 +8,9 @@ from pathfinder.client.state_tracker import StateTracker
 @pytest.fixture
 def tracker():
     with mock.patch.object(
-        StateTracker, "_record_state", return_value=mock.sentinel.initial_state,
+        StateTracker,
+        "_record_state",
+        return_value=mock.sentinel.initial_state,
     ):
         return StateTracker()
 
@@ -17,7 +19,9 @@ def test_reset(tracker):
     initial_update_time = tracker.update_time
 
     with mock.patch.object(
-        tracker, "_record_state", return_value=mock.sentinel.new_state,
+        tracker,
+        "_record_state",
+        return_value=mock.sentinel.new_state,
     ):
         tracker.reset()
 
@@ -30,7 +34,9 @@ def test_set_new_target(tracker):
     initial_update_time = tracker.update_time
 
     with mock.patch.object(
-        tracker, "_record_state", return_value=mock.sentinel.new_state,
+        tracker,
+        "_record_state",
+        return_value=mock.sentinel.new_state,
     ):
         tracker.set_target()
 
@@ -43,7 +49,9 @@ def test_set_same_target(tracker):
     initial_update_time = tracker.update_time
 
     with mock.patch.object(
-        tracker, "_record_state", return_value=mock.sentinel.initial_state,
+        tracker,
+        "_record_state",
+        return_value=mock.sentinel.initial_state,
     ):
         tracker.set_target()
 
@@ -58,7 +66,9 @@ def test_choose_action_reset(tracker):
     with mock.patch.object(tracker, "_reset") as reset:
         with mock.patch.object(tracker, "_set_target") as set_target:
             with mock.patch.object(
-                tracker, "_record_state", return_value=mock.sentinel.new_state,
+                tracker,
+                "_record_state",
+                return_value=mock.sentinel.new_state,
             ):
                 chooser = mock.MagicMock(name="chooser", return_value="reset")
                 assert tracker.choose_action_using(chooser) == "reset"
@@ -76,7 +86,9 @@ def test_choose_action_set_target(tracker):
     with mock.patch.object(tracker, "_reset") as reset:
         with mock.patch.object(tracker, "_set_target") as set_target:
             with mock.patch.object(
-                tracker, "_record_state", return_value=mock.sentinel.new_state,
+                tracker,
+                "_record_state",
+                return_value=mock.sentinel.new_state,
             ):
                 chooser = mock.MagicMock(name="chooser", return_value="set_target")
                 assert tracker.choose_action_using(chooser) == "set_target"
@@ -94,7 +106,9 @@ def test_choose_action_other(tracker):
     with mock.patch.object(tracker, "_reset") as reset:
         with mock.patch.object(tracker, "_set_target") as set_target:
             with mock.patch.object(
-                tracker, "_record_state", return_value=mock.sentinel.new_state,
+                tracker,
+                "_record_state",
+                return_value=mock.sentinel.new_state,
             ):
                 chooser = mock.MagicMock(name="chooser", return_value="other")
                 assert tracker.choose_action_using(chooser) == "other"

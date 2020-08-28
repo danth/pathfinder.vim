@@ -62,14 +62,35 @@ def test_choose_action_changed_lines(default_state):
 
 @mock.patch("pathfinder.client.autorun.vim.vars", {"pf_autorun_delay": 1})
 def test_choose_action_cursor_idle(default_state):
-    assert choose_action(default_state, default_state, time.time() - 2,) == "pathfind"
+    assert (
+        choose_action(
+            default_state,
+            default_state,
+            time.time() - 2,
+        )
+        == "pathfind"
+    )
 
 
 @mock.patch("pathfinder.client.autorun.vim.vars", {"pf_autorun_delay": 1})
 def test_choose_action_set_target(default_state):
-    assert choose_action(default_state, default_state, time.time(),) == "set_target"
+    assert (
+        choose_action(
+            default_state,
+            default_state,
+            time.time(),
+        )
+        == "set_target"
+    )
 
 
 @mock.patch("pathfinder.client.autorun.vim.vars", {"pf_autorun_delay": 0})
 def test_choose_action_do_nothing(default_state):
-    assert choose_action(default_state, default_state, time.time(),) is None
+    assert (
+        choose_action(
+            default_state,
+            default_state,
+            time.time(),
+        )
+        is None
+    )

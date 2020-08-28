@@ -5,7 +5,10 @@ from pathfinder.server.motions.search import SearchMotionGenerator
 
 
 def test_escape_magic():
-    assert SearchMotionGenerator(None)._escape_magic(r"x\x^x$x.x*x[x~x/x") == r"x\\x\^x\$x\.x\*x\[x\~x\/x"
+    assert (
+        SearchMotionGenerator(None)._escape_magic(r"x\x^x$x.x*x[x~x/x")
+        == r"x\\x\^x\$x\.x\*x\[x\~x\/x"
+    )
 
 
 def test_search_finds_shortest_possible_query():
