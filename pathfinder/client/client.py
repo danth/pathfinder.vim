@@ -39,9 +39,7 @@ class Client:
 
     def _build_server_cmd(self):
         """Build the command used to launch the server Vim."""
-        progname = vim.eval("v:progname")  # vim/gvim/nvim etc
-
-        if progname == "nvim":
+        if vim.eval("has('nvim')"):
             python3_host_prog = vim.eval("g:python3_host_prog")
             options = [
                 "--headless",
@@ -52,7 +50,7 @@ class Client:
             options = ["-v", "--not-a-term"]
 
         return (
-            [progname]
+            [vim.eval("v:progpath")]
             + options
             + [
                 "--clean",
