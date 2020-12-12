@@ -39,31 +39,32 @@ class Client:
 
     def _build_server_cmd(self):
         """Build the command used to launch the server Vim."""
-        if vim.eval("has('nvim')"):
+        progpath = vim.eval("v:progpath")
+
+        options = [
+            progpath,
+            "--clean",
+            "--cmd",
+            f"let g:pf_server_communiation_file='{self.file_path}'",
+            "-u",
+            os.path.normpath(
+                # serverrc.vim in the root of this repository, instead of the user's
+                # regular .vimrc or init.vim
+                os.path.join(os.path.dirname(__file__), "..", "..", "serverrc.vim")
+            ),
+        ]
+
+        if progpath.endswith("nvim"):
             python3_host_prog = vim.eval("g:python3_host_prog")
-            options = [
+            options += [
                 "--headless",
                 "--cmd",
                 f"let g:python3_host_prog='{python3_host_prog}'",
             ]
         else:
-            options = ["-v", "--not-a-term"]
+            options += ["-v", "--not-a-term"]
 
-        return (
-            [vim.eval("v:progpath")]
-            + options
-            + [
-                "--clean",
-                "--cmd",
-                f"let g:pf_server_communiation_file='{self.file_path}'",
-                "-u",
-                os.path.normpath(
-                    # serverrc.vim in the root of this repository, instead of the user's
-                    # regular .vimrc or init.vim
-                    os.path.join(os.path.dirname(__file__), "..", "..", "serverrc.vim")
-                ),
-            ]
-        )
+        return options
 
     def close(self):
         """Shut down the server Vim."""
