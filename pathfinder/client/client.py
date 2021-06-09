@@ -45,7 +45,7 @@ class Client:
             progpath,
             "--clean",
             "--cmd",
-            f"let g:pf_server_communiation_file='{self.file_path}'",
+            f"let g:pf_server_communication_file='{self.file_path}'",
             "-u",
             os.path.normpath(
                 # serverrc.vim in the root of this repository, instead of the user's

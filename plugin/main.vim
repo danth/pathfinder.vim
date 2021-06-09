@@ -20,7 +20,7 @@ sys.path.insert(0, normpath(join(plugin_root, '..', 'heapdict')))
 endpython
 
 
-if exists('g:pf_server_communiation_file')
+if exists('g:pf_server_communication_file')
   " Importing this will run the server and connect back to the client
   python3 import pathfinder.server.server
 else

@@ -94,5 +94,5 @@ class Server:
             self.client_connection.send(("RESULT", motions))
 
 
-server = Server(vim.vars["pf_server_communiation_file"])
+server = Server(vim.vars["pf_server_communication_file"])
 server.run()
