@@ -1,9 +1,10 @@
 # Contributing to Pathfinder.vim
 
-*This file contains information about the inner workings of pathfinder.vim.
-You should also read these [general contributing guidelines][default-contributing].*
+## Commit messages
 
-[default-contributing]: https://github.com/danth/.github/blob/master/CONTRIBUTING.md
+**Please follow the
+[Angular commit style](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)
+in your commit messages so that the automatic version numbering can work.**
 
 ## Development environment
 
