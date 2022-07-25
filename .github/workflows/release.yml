@@ -40,51 +40,10 @@ jobs:
     - name: Run pytest
       run: pytest -v
 
-  beautify:
-    name: Beautify Python code
-    runs-on: ubuntu-latest
-    outputs:
-      new_sha: ${{ steps.sha.outputs.SHA }}
-
-    steps:
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.9
-
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install Black
-        run: python -m pip install black
-
-      - name: Beautify with Black
-        run: python -m black .
-
-      - name: Install isort
-        run: python -m pip install "isort >=4,<5"
-
-      - name: Sort imports
-        run: python -m isort -y -rc .
-
-      - name: Commit and push changes
-        uses: github-actions-x/commit@v2.5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'style: beautify ${{ github.sha }}'
-          name: github-actions
-          email: action@github.com
-
-      - name: Get new SHA
-        id: sha
-        run: |
-          new_sha=$(git rev-parse HEAD)
-          echo "::set-output name=SHA::$new_sha"
-
   release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    needs: [test, beautify]
+    needs: [test]
     if: github.repository_owner == 'danth'
 
     steps:
