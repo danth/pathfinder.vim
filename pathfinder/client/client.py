@@ -55,12 +55,12 @@ class Client:
         ]
 
         if progpath.endswith("nvim"):
-            python3_host_prog = vim.eval("g:python3_host_prog")
-            options += [
-                "--headless",
-                "--cmd",
-                f"let g:python3_host_prog='{python3_host_prog}'",
-            ]
+            options += ["--headless"]
+            try:
+                python3_host_prog = vim.eval("g:python3_host_prog")
+                options += ["--cmd", f"let g:python3_host_prog='{python3_host_prog}'"]
+            except:
+                pass
         else:
             options += ["-v", "--not-a-term"]
 
